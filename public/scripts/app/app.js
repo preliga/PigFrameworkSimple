@@ -15,8 +15,12 @@
 
 
 
+// $(function(){
+const file = view.file + '.js';
+// console.log(file);
+    requirejs(['index',file]);
+// });
 
-requirejs(['index']);
 
 // console.log(x);
 //
