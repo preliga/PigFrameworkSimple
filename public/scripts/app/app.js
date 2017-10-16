@@ -1,29 +1,21 @@
-// For any third party dependencies, like jQuery, place them in the lib folder.
+if (view.fileJsExist) {
+    action = `/${view.file}.js`;
+} else {
+    action = `/scripts/app/action/Base.js`;
+}
 
-// Configure loading modules from the lib directory,
-// except for 'app' ones, which are in a sibling
-// directory.
-// requirejs.config({
-//     baseUrl: 'lib',
-//     paths: {
-//         app: '../app'
-//     }
-// });
+const mainAction = action;
+// console.log(mainAction);
 
-// Start loading the main app file. Put all of
-// your application logic in there.
-
-
-
-// $(function(){
-const file = view.file + '.js';
-// console.log(file);
-    requirejs(['index',file]);
-// });
-
-
-// console.log(x);
-//
-// var messages = require('./test2');
-//
-// console.log(messages);
+requirejs(
+    [
+        '/scripts/lib/Pig/App.js'
+    ],
+    function (App) {
+        var app = new App();
+        app.run();
+    },
+    function (err) {
+        console.log(err);
+    }
+);

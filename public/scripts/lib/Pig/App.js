@@ -1,16 +1,19 @@
 'use strict';
-define(function (require) {
-    class App {
-        constructor() {
+define(
+    [
+        './Router.js'
+    ],
+    function (Router) {
 
-        }
+        return class App {
+            constructor() {
 
-        run() {
-            let Router = require('./Router.js');
-            let router = new Router();
-            router.route(require);
-        }
+            }
+
+            run() {
+                var router = new Router();
+                router.route();
+            }
+        };
     }
-
-    return App;
-});
+);

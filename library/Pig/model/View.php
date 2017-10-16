@@ -11,6 +11,8 @@ class View
     public function __construct(String $file, String $template = 'standard')
     {
         $this->file = $file;
+        $this->fileJsExist = file_exists("$this->file.js");
+
         $this->template = $template;
 
         $this->path = explode('/', $file);

@@ -1,25 +1,45 @@
-$(function () {
+'use strict';
+define(
+    [
+        '/scripts/app/action/Base.js'
+    ],
+    function (Base) {
+        return class stepOne extends Base {
 
-    $('.showShows').on('click', function () {
+            initAction() {
+                console.log("START");
+            }
 
-        var showsClass = $(this).attr('showsClass');
-        var active = $(this).attr('active');
+            afterRender() {
+                super.afterRender();
 
-        $x = $('.' + showsClass).toggle();
+                events();
 
-        if (active === "1") {
-            $(this)
-                .attr('active', "0")
-                .removeClass('btn-success')
-                .addClass('btn-danger')
-            ;
-        } else {
-            $(this)
-                .attr('active', "1")
-                .addClass('btn-success')
-                .removeClass('btn-danger')
-            ;
-        }
-    });
+            }
+        };
 
-});
+        function events() {
+            $('.showShows').on('click', function () {
+
+                var showsClass = $(this).attr('showsClass');
+                var active = $(this).attr('active');
+
+                $('.' + showsClass).toggle();
+
+                if (active === "1") {
+                    $(this)
+                        .attr('active', "0")
+                        .removeClass('btn-success')
+                        .addClass('btn-danger')
+                    ;
+                } else {
+                    $(this)
+                        .attr('active', "1")
+                        .addClass('btn-success')
+                        .removeClass('btn-danger')
+                    ;
+                }
+            });
+        };
+    }
+);

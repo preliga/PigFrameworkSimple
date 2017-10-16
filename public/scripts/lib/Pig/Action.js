@@ -1,22 +1,24 @@
 'use strict';
-define(function (require) {
-    class Action {
-        constructor() {
+define(
+    [
 
-        }
+    ],
+    function () {
+        return class Action {
+            constructor() {
 
-        initAction() {
+            }
 
-        }
+            initAction() {
 
-        initObjects() {
+            }
 
-        }
+            beforeRender() {
 
-        events() {
+            }
 
-        }
-    }
+            afterRender() {
 
-    return Action;
-});
+            }
+        };
+    });

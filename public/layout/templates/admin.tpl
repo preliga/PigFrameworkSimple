@@ -52,7 +52,9 @@
 <script src="/scripts/lib/datetimepicker/jquery.datetimepicker.full.min.js"></script>
 <script src="/scripts/lib/popper/popper.min.js"></script>
 <script src="/scripts/lib/bootstrap/js/bootstrap.min.js"></script>
-<script src="/scripts/app/common.js"></script>
+
+<script data-main="/scripts/app/app" src="/scripts/lib/require.js"></script>
+{*<script src="/scripts/app/common.js"></script>*}
 
 </body>
 

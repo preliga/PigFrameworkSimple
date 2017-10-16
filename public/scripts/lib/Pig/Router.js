@@ -1,26 +1,36 @@
 'use strict';
-define(function (require) {
-    class Router {
-        constructor() {
+define(
+    [
+        mainAction
+    ],
+    function (Action) {
+
+        function ready(fn) {
+            if (document.readyState !== 'loading') {
+                fn();
+            } else if (document.addEventListener) {
+                document.addEventListener('DOMContentLoaded', fn);
+            } else {
+                document.attachEvent('onreadystatechange', function () {
+                    if (document.readyState !== 'loading') {
+                        fn();
+                    }
+                });
+            }
         }
 
-        route(require) {
+        return class Router {
+            constructor() {
+            }
 
-            const file = view.file + '.js';
-            // console.log(file);
+            route() {
+                var action = new Action();
 
+                action.initAction();
+                action.beforeRender();
 
-            // requirejs([file]);
-            // requirejs(['index']);
-            let Action = require(file);
-
-            let action = new Action();
-            //
-            action.initAction();
-            action.initObjects();
-            action.events();
-        }
+                ready(action.afterRender);
+            }
+        };
     }
-
-    return Router;
-});
+);
