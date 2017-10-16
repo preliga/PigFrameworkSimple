@@ -1,7 +1,7 @@
 <?php
 
 use library\Pig\model\Session;
-use module\Action\Base;
+use resource\action\Base;
 
 class bookTickets extends Base
 {

@@ -5,9 +5,9 @@
  * User: Piotr
  */
 
-use library\Pig\Action;
+use resource\action\Base\Admin;
 
-class bookTickets extends Action
+class bookTickets extends Admin
 {
     public function onAction()
     {

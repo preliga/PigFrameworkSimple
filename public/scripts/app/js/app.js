@@ -1,11 +1,10 @@
 if (view.fileJsExist) {
     action = `/${view.file}.js`;
 } else {
-    action = `/scripts/app/action/Base.js`;
+    action = `/scripts/app/js/action/Base.js`;
 }
 
 const mainAction = action;
-// console.log(mainAction);
 
 requirejs(
     [

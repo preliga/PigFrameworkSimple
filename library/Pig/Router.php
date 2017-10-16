@@ -48,15 +48,17 @@ class Router {
         if(!empty($action))
         {
             $action->init();
-            $action->permission();
+            $action->permissionBase();
 
             if(!$action->hasParam('json')) {
-                $action->preAction();
+                $action->permissionStandard();
+                $action->preActionStandard();
             } else {
+                $action->permissionJSON();
                 $action->preActionJSON();
             }
 
-            $action->prepareAction();
+            $action->preAction();
             $action->onAction();
             $action->postAction();
 

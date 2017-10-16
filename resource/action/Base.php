@@ -4,11 +4,11 @@
  * User: Piotr
  */
 
-namespace module\Action;
+namespace resource\action;
 
 use library\Pig\Action;
 use library\Pig\model\Config;
-use module\Db;
+use resource\model\Db;
 
 class Base extends Action
 {

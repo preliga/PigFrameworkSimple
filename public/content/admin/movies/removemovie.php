@@ -5,7 +5,7 @@
  * User: Piotr
  */
 
-use module\Action\Admin;
+use resource\action\Base\Admin;
 
 class removemovie extends Admin
 {

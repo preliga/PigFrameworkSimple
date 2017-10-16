@@ -22,7 +22,7 @@ abstract class Action
     /**
      * @var String
      */
-    private $file;
+    protected $file;
 
     public function __construct($file)
     {
@@ -35,12 +35,22 @@ abstract class Action
         $this->view = new View($this->file);
     }
 
-    public function permission()
+    public function permissionBase()
     {
 
     }
 
-    public function preAction()
+    public function permissionStandard()
+    {
+
+    }
+
+    public function permissionJSON()
+    {
+
+    }
+
+    public function preActionStandard()
     {
 
     }
@@ -50,7 +60,7 @@ abstract class Action
 
     }
 
-    public function prepareAction()
+    public function preAction()
     {
 
     }

@@ -1,6 +1,6 @@
 <?php
 
-use \module\Action\Base;
+use \resource\action\Base;
 
 class index extends Base
 {

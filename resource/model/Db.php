@@ -1,6 +1,6 @@
 <?php
 
-namespace module;
+namespace resource\model;
 
 use library\Pig\model\Db as PigDb;
 

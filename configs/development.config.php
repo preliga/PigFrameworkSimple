@@ -18,5 +18,7 @@ return [
         //debugging = true;
         'caching' => true,
         'cache_lifetime' => 0,
+        'cache_dir' => '../cache/Smarty/cache',
+        'compile_dir' => '../cache/Smarty/templates_c',
     ]
 ];

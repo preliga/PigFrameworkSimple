@@ -23,9 +23,9 @@
     <link rel="stylesheet" href="/scripts/lib/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/scripts/lib/datetimepicker/jquery.datetimepicker.min.css">
     <link rel="stylesheet" href="/scripts/app/style.css">
-
-
-
+    {if file_exists("$file.css")}
+        <link rel="stylesheet" href="/{$file}.css">
+    {/if}
 </head>
 
 <body>
@@ -54,7 +54,6 @@
 <script src="/scripts/lib/bootstrap/js/bootstrap.min.js"></script>
 
 <script data-main="/scripts/app/app" src="/scripts/lib/require.js"></script>
-{*<script src="/scripts/app/common.js"></script>*}
 
 </body>
 

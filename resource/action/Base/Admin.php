@@ -3,15 +3,16 @@
  * Created by PhpStorm.
  * User: Piotr
  */
-namespace module\Action;
+namespace resource\action\Base;
 
 use library\Pig\model\Session;
+use resource\action\Base;
 
 class Admin extends Base
 {
     protected $userAdmin;
 
-    public function permission()
+    public function permissionBase()
     {
         $session = Session::get('session');
 

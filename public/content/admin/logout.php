@@ -6,7 +6,7 @@
  */
 
 use library\Pig\Session;
-use module\Action\Admin;
+use resource\action\Base\Admin;
 
 class logout extends Admin
 {

@@ -6,7 +6,7 @@
  */
 
 
-use module\Action\Admin;
+use resource\action\Base\Admin;
 
 class editshow extends Admin
 {

@@ -1,13 +1,13 @@
 'use strict';
 define(
     [
-        '/scripts/app/action/Base.js'
+        '/scripts/app/js/action/Base.js'
     ],
     function (Base) {
         return class stepOne extends Base {
 
             initAction() {
-                console.log("START");
+                // console.log("START");
             }
 
             afterRender() {

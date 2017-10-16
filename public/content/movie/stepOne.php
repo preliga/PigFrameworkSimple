@@ -1,7 +1,7 @@
 <?php
 
 
-use module\Action\Base;
+use resource\action\Base;
 
 class stepOne extends Base
 {
