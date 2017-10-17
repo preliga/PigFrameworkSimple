@@ -14,12 +14,12 @@ class bookTickets extends Admin
         $showId = $this->getParam('showId');
 
         if (empty($showId)) {
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found param 'showId'");
         }
 
         $this->saveTickets($showId);
 
-        $this->redirect("/admin/repertoire/seats?showId=$showId");
+        $this->redirect("/admin/repertoire/seats", ['showId' => $showId]);
     }
 
     public function resetSeats($showId)

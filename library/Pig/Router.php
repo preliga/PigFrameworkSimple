@@ -7,14 +7,14 @@
 
 namespace library\Pig;
 
-class Router {
-
-    public function __construct($baseUrl)
+class Router
+{
+    public function __construct(string $baseUrl)
     {
         $this->baseUrl = $baseUrl;
     }
 
-    public function route($url)
+    public function route(string $url)
     {
         $action = null;
         if (empty($url) || $url == '/' || $url == '/index.php') {
@@ -30,11 +30,8 @@ class Router {
 
                 if (is_dir($path)) {
                     $path .= "/";
-                }
-                else
-                {
-                    try
-                    {
+                } else {
+                    try {
                         require $path . '.php';
                     } catch (\Exception $e) {
                         die(var_dump($e));
@@ -45,12 +42,11 @@ class Router {
             }
         }
 
-        if(!empty($action))
-        {
+        if (!empty($action)) {
             $action->init();
             $action->permissionBase();
 
-            if(!$action->hasParam('json')) {
+            if (!$action->hasParam('json')) {
                 $action->permissionStandard();
                 $action->preActionStandard();
             } else {
@@ -62,7 +58,7 @@ class Router {
             $action->onAction();
             $action->postAction();
 
-            if(!$action->hasParam('json')) {
+            if (!$action->hasParam('json')) {
                 $action->render();
             } else {
                 $action->prepareRequest();

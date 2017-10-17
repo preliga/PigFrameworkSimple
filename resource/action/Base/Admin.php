@@ -8,7 +8,7 @@ namespace resource\action\Base;
 use library\Pig\model\Session;
 use resource\action\Base;
 
-class Admin extends Base
+abstract class Admin extends Base
 {
     protected $userAdmin;
 

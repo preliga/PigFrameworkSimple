@@ -10,7 +10,7 @@ class movie extends Base
         $movieId = $this->getParam('movieId');
 
         if(empty($movieId)){
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found param 'movieId'");
         }
 
         $movie = $this->getMovie($movieId);

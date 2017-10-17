@@ -10,20 +10,20 @@ class stepOne extends Base
         $movieId = $this->getParam('movieId');
 
         if (empty($movieId)) {
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found param 'movieId'");
         }
 
         $movie = $this->getMovie($movieId);
 
 
         if (empty($movie)) {
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found movie with id: '$movieId'");
         }
 
         $shows = $this->getRepertoire($movieId);
 
         if (empty($shows)) {
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found shows with movie with id: '$movieId'");
         }
 
         $emptyPoster = base64_encode(file_get_contents('images/emptyPoster.jpg'));

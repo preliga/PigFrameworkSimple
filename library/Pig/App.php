@@ -16,8 +16,8 @@ class App
             require $str;
         });
 
-        $baseUrl = $_SERVER['HTTP_HOST'].'/';
-        $url = empty($_SERVER['REDIRECT_URL'])?'/':$_SERVER['REDIRECT_URL'];
+        $baseUrl = $_SERVER['HTTP_HOST'] . '/';
+        $url = empty($_SERVER['REDIRECT_URL']) ? '/' : $_SERVER['REDIRECT_URL'];
 
         $router = new Router($baseUrl);
         $router->route($url);

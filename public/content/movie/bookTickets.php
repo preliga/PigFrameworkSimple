@@ -10,17 +10,17 @@ class bookTickets extends Base
         $showId = $this->getParam('showId');
 
         if (empty($showId)) {
-            $this->redirect('/');
+            $this->redirect('/', [], false, "Not found param 'showId'");
         }
 
         $email = $this->getPost('email');
         if (empty($email)) {
-            $this->redirect('/');
+            $this->redirect('/', [],false, "Not found post arg 'email'");
         }
 
         if (count($this->getPost()) < 2) {
             Session::set('bookTicketsError', 'Choose seats.');
-            $this->redirect("/movie/stepTwo?showId=$showId");
+            $this->redirect("/movie/stepTwo", ['showId' => $showId]);
         }
 
         $this->saveTickets($showId);
@@ -28,7 +28,8 @@ class bookTickets extends Base
         $this->sendMail($email);
 
         Session::set('bookTicketsMessage', 'Booking was correct. <br> Mail was send.');
-        $this->redirect("/movie/stepTwo?showId=$showId");
+
+        $this->redirect("/movie/stepTwo", ['showId' => $showId]);
     }
 
     public function getSeats($showId)
@@ -67,8 +68,6 @@ class bookTickets extends Base
         foreach ($dataToInsert as $data) {
             $this->db->insert('seat', $data);
         }
-
-
     }
 
     public function sendMail($email)

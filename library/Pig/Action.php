@@ -5,7 +5,6 @@
  * User: Piotr
  */
 
-
 namespace library\Pig;
 
 use library\Pig\model\{
@@ -20,11 +19,11 @@ abstract class Action
     protected $view;
 
     /**
-     * @var String
+     * @var string
      */
     protected $file;
 
-    public function __construct($file)
+    public function __construct(string $file)
     {
         Session::init();
         $this->file = $file;
@@ -37,42 +36,32 @@ abstract class Action
 
     public function permissionBase()
     {
-
     }
 
     public function permissionStandard()
     {
-
     }
 
     public function permissionJSON()
     {
-
     }
 
     public function preActionStandard()
     {
-
     }
 
     public function preActionJSON()
     {
-
     }
 
     public function preAction()
     {
-
     }
 
-    public function onAction()
-    {
-
-    }
+    abstract public function onAction();
 
     public function postAction()
     {
-
     }
 
     public function prepareRequest()
@@ -85,47 +74,70 @@ abstract class Action
         $this->view->render();
     }
 
-    public function redirect($url)
+    public function redirect(
+        string $url = "/",
+        array $params = [],
+        bool $status = true,
+        string $message = "",
+        array $data = []
+    )
     {
-        header("Location: {$url}");
-        die();
+        $this->view->status = $status ? 'success' : 'error';
+        $this->view->message = $message;
+
+        if ($this->hasParam('json')) {
+            $this->view->prepareRequest($data);
+            die();
+        } else {
+
+            if (!empty($params)) {
+                $query = '?';
+                foreach ($params as $key => $val) {
+                    $query .= "$key=$val";
+                }
+                $url .= $query;
+            }
+
+            header("Location: {$url}");
+            die();
+        }
     }
 
-    public function getParams()
+    public function addJS(string $path)
+    {
+        $this->view->scriptLoader->addJS($path);
+    }
+
+    public function addCSS(string $path)
+    {
+        $this->view->scriptLoader->addCSS($path);
+    }
+
+    public function getParams(): array
     {
         return $_GET;
     }
 
     public function getParam($name, $default = null)
     {
-
-        if (!$this->hasParam($name)) {
-            return $default;
-        }
-
-        return $_GET[$name];
+        return $_GET[$name] ?? $default;
     }
 
-    public function hasParam($name)
+    public function hasParam($name): bool
     {
         return !empty($_GET[$name]);
     }
 
     public function getPost($name = null, $default = null)
     {
-
-        if (!$this->hasPost($name)) {
-            return $default;
-        }
-
         if (!empty($name)) {
-            return $_POST[$name];
+            return $_POST[$name] ?? $default;
         } else {
-            return $_POST;
+            return $_POST ?? $default;
         }
     }
 
-    public function hasPost($name = null)
+    public function hasPost($name = null): bool
     {
         if (!empty($name)) {
             return !empty($_POST[$name]);
