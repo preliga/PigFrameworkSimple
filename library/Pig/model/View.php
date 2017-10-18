@@ -63,7 +63,7 @@ class View
         $this->template = $template;
     }
 
-    public function render()
+    public function render(array $data)
     {
         $smarty = new \Smarty();
         $smartyOptions = Config::getInstance()->getConfig('smarty');
@@ -72,7 +72,7 @@ class View
             $smarty->$key = $val;
         }
 
-        $this->assignVariable($smarty);
+        $this->assignVariable($smarty, $data);
         $tpl = "layout/templates/{$this->template}.tpl";
 
         if (file_exists($tpl)) {
@@ -82,7 +82,7 @@ class View
         }
     }
 
-    public function prepareRequest(array $data = null)
+    public function prepareRequest(array $data = [])
     {
         if (empty($data)) {
             $publicVars = create_function('$obj', 'return get_object_vars($obj);');
@@ -95,15 +95,14 @@ class View
             unset($data['message']);
         }
 
-
         header('Content-Type: application/json');
         echo json_encode(['data' => $data, 'status' => $this->status, 'message' => $this->message]);
     }
 
-    private function assignVariable(\Smarty $smarty)
+    private function assignVariable(\Smarty $smarty, array $data)
     {
         $publicVars = create_function('$obj', 'return get_object_vars($obj);');
-        $result = $publicVars($this);
+        $result = array_merge($publicVars($this), $data);
 
         foreach ($result as $key => $var) {
             $smarty->assign($key, $var);

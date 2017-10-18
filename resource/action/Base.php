@@ -6,12 +6,16 @@
 
 namespace resource\action;
 
-use library\Pig\Action;
+use library\Pig\action\Action;
 use library\Pig\model\Config;
 use resource\model\Db;
+use Zend_Db_Adapter_Mysqli;
 
 abstract class Base extends Action
 {
+    /**
+     * @var Zend_Db_Adapter_Mysqli
+     */
     protected $db;
 
     public function init()

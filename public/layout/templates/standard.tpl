@@ -39,7 +39,6 @@
 <!-- App -->
 <script data-main="/scripts/app/js/app" src="/scripts/lib/require.js"></script>
 
-
 </body>
 
 </html>

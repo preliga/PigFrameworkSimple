@@ -1,23 +1,5 @@
 <?php
 
-
-/*
- * Załadowanie bibliotek oraz start aplikacji
- *
- * Zend -> do obsługi bazy danych
- * Smarty -> do łatwiejszego pisanie kodu PHP w HTMLu
- * App -> moja własna 'biblioteka' jądro aplikacji
- *
- *
- * Dodatkowo z bibliotek użytwane są jeszcze
- * JQuery
- * Bootstrap
- * font-awesome
- *
- * Ale one są po stronie przeglądarki a nie serwera
- */
-
-
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__ . '/../library/Pig/App.php';
 

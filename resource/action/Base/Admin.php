@@ -10,6 +10,9 @@ use resource\action\Base;
 
 abstract class Admin extends Base
 {
+    /**
+     * @var array
+     */
     protected $userAdmin;
 
     public function permissionBase()

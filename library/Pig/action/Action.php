@@ -5,10 +5,10 @@
  * User: Piotr
  */
 
-namespace library\Pig;
+namespace library\Pig\action;
 
 use library\Pig\model\{
-    Session, View
+    Config, Session, View
 };
 
 abstract class Action
@@ -71,7 +71,12 @@ abstract class Action
 
     public function render()
     {
-        $this->view->render();
+        $data = [
+            'post' => $this->getPost(),
+            'params' => $this->getParams(),
+        ];
+
+        $this->view->render($data);
     }
 
     public function redirect(
