@@ -18,6 +18,9 @@ abstract class Base extends Action
      */
     protected $db;
 
+    /**
+     *
+     */
     public function init()
     {
         parent::init();
@@ -30,6 +33,9 @@ abstract class Base extends Action
         $this->db = $db->getDb();
     }
 
+    /**
+     *
+     */
     private function definedJS()
     {
         $this->addJS('/scripts/lib/jquery/jquery.min.js');
@@ -39,6 +45,9 @@ abstract class Base extends Action
         $this->addJS('/scripts/lib/bootstrap/js/bootstrap.min.js');
     }
 
+    /**
+     *
+     */
     private function definedCSS()
     {
         $this->addCSS('/scripts/lib/bootstrap/css/bootstrap.min.css');

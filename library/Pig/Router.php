@@ -7,19 +7,38 @@
 
 namespace library\Pig;
 
+use library\Pig\model\PigException;
+
+/**
+ * Class Router
+ * @package library\Pig
+ */
 class Router
 {
+    /**
+     * Router constructor.
+     * @param string $baseUrl
+     */
     public function __construct(string $baseUrl)
     {
         $this->baseUrl = $baseUrl;
     }
 
+    /**
+     * @param string $url
+     * @throws \Exception
+     */
     public function route(string $url)
     {
         $action = null;
         if (empty($url) || $url == '/' || $url == '/index.php') {
-            require 'content/index.php';
-            $action = new \index('content/index');
+            $file = 'content/index';
+//            if(file_exists("$file.1php")) {
+                require "$file.php";
+                $action = new \index($file);
+//            } else {
+//                throw new PigException("Not found action: $file");
+//            }
         } else {
 
             $array_url = explode("/", $url);

@@ -9,6 +9,10 @@ namespace library\Pig\model;
 
 use Zend_Db_Adapter_Mysqli;
 
+/**
+ * Class Db
+ * @package library\Pig\model
+ */
 class Db
 {
     /**
@@ -21,17 +25,27 @@ class Db
      */
     protected $db;
 
+    /**
+     * @var array
+     */
     protected $config;
 
-    public function __construct($config)
+    /**
+     * Db constructor.
+     * @param $config
+     */
+    public function __construct(array $config)
     {
         $this->config = $config;
 
         $this->db = self::connect($config);
     }
 
-
-    private static function connect($config) : Zend_Db_Adapter_Mysqli
+    /**
+     * @param $config
+     * @return Zend_Db_Adapter_Mysqli
+     */
+    private static function connect($config): Zend_Db_Adapter_Mysqli
     {
         if (empty(self::$adapter)) {
             return new Zend_Db_Adapter_Mysqli($config);
@@ -40,6 +54,9 @@ class Db
         }
     }
 
+    /**
+     * @return Zend_Db_Adapter_Mysqli
+     */
     public function getDb(): Zend_Db_Adapter_Mysqli
     {
         return $this->db;

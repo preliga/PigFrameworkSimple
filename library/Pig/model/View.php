@@ -6,6 +6,10 @@
 
 namespace library\Pig\model;
 
+/**
+ * Class View
+ * @package library\Pig\model
+ */
 class View
 {
     /**
@@ -43,6 +47,11 @@ class View
      */
     public $scriptLoader;
 
+    /**
+     * View constructor.
+     * @param string $file
+     * @param string $template
+     */
     public function __construct(string $file, string $template = 'standard')
     {
         $this->file = $file;
@@ -58,11 +67,17 @@ class View
         $this->scriptLoader = new ScriptLoader();
     }
 
+    /**
+     * @param string $template
+     */
     public function setTemplate(string $template)
     {
         $this->template = $template;
     }
 
+    /**
+     * @param array $data
+     */
     public function render(array $data)
     {
         $smarty = new \Smarty();
@@ -82,6 +97,9 @@ class View
         }
     }
 
+    /**
+     * @param array $data
+     */
     public function prepareRequest(array $data = [])
     {
         if (empty($data)) {
@@ -99,6 +117,10 @@ class View
         echo json_encode(['data' => $data, 'status' => $this->status, 'message' => $this->message]);
     }
 
+    /**
+     * @param \Smarty $smarty
+     * @param array $data
+     */
     private function assignVariable(\Smarty $smarty, array $data)
     {
         $publicVars = create_function('$obj', 'return get_object_vars($obj);');

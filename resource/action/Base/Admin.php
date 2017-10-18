@@ -15,6 +15,9 @@ abstract class Admin extends Base
      */
     protected $userAdmin;
 
+    /**
+     *
+     */
     public function permissionBase()
     {
         $session = Session::get('session');
@@ -37,6 +40,9 @@ abstract class Admin extends Base
         $this->userAdmin = $admin;
     }
 
+    /**
+     *
+     */
     public function init()
     {
         parent::init();

@@ -11,7 +11,6 @@ class index extends Base
 
         $emptyPoster = base64_encode(file_get_contents('images/emptyPoster.jpg'));
 
-
         $this->view->emptyPoster = $emptyPoster;
         $this->view->movies = $movies;
     }
