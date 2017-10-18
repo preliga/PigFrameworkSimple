@@ -1,13 +1,15 @@
 <?php
 
-use \resource\action\Base;
+use resource\action\Base;
+use resource\orm\Movie;
 
 class index extends Base
 {
 
     public function onAction()
     {
-        $movies = $this->getMovies();
+//        $movies = $this->getMovies();
+        $movies = Movie::find()->getArray();
 
         $emptyPoster = base64_encode(file_get_contents('images/emptyPoster.jpg'));
 
