@@ -12,9 +12,9 @@ use library\Pig\orm\Schedule;
 class Movie extends Schedule
 {
 
-    public function createSelect(): \Zend_Db_Select
+    protected function createSelect(): \Zend_Db_Select
     {
-        $select = parent::createSelect();
+        $select = $this->db->select();
 
         $select->from(['m' => 'movie'])
             ->join(['s' => 'show'], 's.movieId = m.id AND s.term >= NOW() AND s.term <= DATE_ADD(NOW(), INTERVAL 7 DAY)', [])
@@ -22,5 +22,10 @@ class Movie extends Schedule
             ->group('m.id');
 
         return $select;
+    }
+
+    protected function createTreeDependency(): array
+    {
+        // TODO: Implement createTreeDependency() method.
     }
 }
