@@ -18,7 +18,8 @@ class Collection
         $this->collection = $collection;
     }
 
-    public function getArray(){
+    public function getArray()
+    {
         return $this->collection;
     }
 }

@@ -26,6 +26,49 @@ class Movie extends Schedule
 
     protected function createTreeDependency(): array
     {
-        // TODO: Implement createTreeDependency() method.
+        return
+            [
+                'keys' => [
+                    'showId' => 's.id',
+                ],
+                'tables' => [
+                    'show' => [
+                        'alias' => 's',
+                        'keys' => [   /// może ustalić tylko jeden ??
+                            'showId' => 'id',
+                        ],
+                        'columns' => [
+                            'showId' => 'id',
+                            'showActive' => 'active',
+                            'movieId',
+                            'term'
+                        ]
+                    ],
+                    'movie' => [
+                        'alias' => 'm',
+                        'keys' => [
+                            'movieId' => 'id',
+                        ],
+                        'columns' => [
+                            'fullTitle' => new \Zend_Db_Expr("CONCAT(m.title, m.title)"),
+                            'movieId' => 'id',
+                            'movieActive' => 'active',
+                            'title',
+                            'description',
+                            'trailer',
+                            'categoryId',
+                            'poster',
+                            'duration',
+
+                        ]
+                    ]
+                ]
+            ];
+    }
+
+    protected function getValidators(): array
+    {
+        return [];
+        // TODO: Implement validate() method.
     }
 }

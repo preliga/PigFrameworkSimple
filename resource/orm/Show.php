@@ -8,8 +8,9 @@
 
 namespace resource\orm;
 
-
-use library\Pig\orm\Schedule;
+use library\Pig\orm\{
+    Schedule,Record
+};
 
 class Show extends Schedule
 {
@@ -20,25 +21,24 @@ class Show extends Schedule
             ->from(['s' => 'show'], [])
             ->join(['m' => 'movie'], 's.movieId = m.id', [])
             ->where('s.active = 1')
-//            ->where('s.term > NOW()')
             ->order('s.term');
-
-//        die($select);
 
         return $select;
     }
 
     protected function createTreeDependency(): array
     {
+        // kolumny łączone joinem muszą mieć takie same nazwy wtedy są scalane i updatowane automatycznie
+
         return
             [
                 'keys' => [
-                    'showId' => 'id',
+                    'showId' => 's.id', // z aliasem !!!
                 ],
                 'tables' => [
                     'show' => [
                         'alias' => 's',
-                        'keys' => [   /// może ustalić tylko jeden ??
+                        'keys' => [   /// ustalić tylko jeden klucz
                             'showId' => 'id',
                         ],
                         'columns' => [
@@ -63,10 +63,20 @@ class Show extends Schedule
                             'categoryId',
                             'poster',
                             'duration',
-
                         ]
                     ]
                 ]
             ];
+    }
+
+    protected function getValidators(): array
+    {
+        $validators = [];
+
+        $validators[] = function (Record $record) {
+            return ['status' => strlen($record->title) > 10, 'message' => "Title is too short."];
+        };
+
+        return $validators;
     }
 }
