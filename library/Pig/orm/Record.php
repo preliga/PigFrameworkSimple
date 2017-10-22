@@ -64,23 +64,32 @@ class Record
         $this->record = $this->schedule->get($this->$key)->getArray();
     }
 
-    public function save($notTables = null): array
+    public function save(array $notTables = null, array $onlyTables = null): array
     {
         $valid = $this->schedule->validateRecord($this);
 
         if (!$valid['status']) {
             return $valid;
         } else {
-            $this->schedule->beforeSaveRecord($this, $notTables);
-            $this->schedule->saveRecord($this, $notTables);
-            $this->schedule->afterSaveRecord($this, $notTables);
+            $this->schedule->beforeSaveRecord($this, $notTables, $onlyTables);
+            $this->schedule->saveRecord($this, $notTables, $onlyTables);
+            $this->schedule->afterSaveRecord($this, $notTables, $onlyTables);
 
-            return ['status' => true, 'message' => 'OK'];
+            return ['status' => true, 'errors' => []];
         }
     }
 
-    public function validate(): array
+    public function delete(array $notTables = null, array $onlyTables = null): array
     {
-        return $this->schedule->validateRecord($this);
+        $this->schedule->beforeDeleteRecord($this, $notTables, $onlyTables);
+        $this->schedule->deleteRecord($this, $notTables, $onlyTables);
+        $this->schedule->afterDeleteRecord($this, $notTables, $onlyTables);
+
+        return ['status' => true, 'errors' => []];
+    }
+
+    public function validate(string $column = null): array
+    {
+        return $this->schedule->validateRecord($this, $column);
     }
 }

@@ -7,6 +7,8 @@
  */
 namespace resource\orm;
 
+use library\Pig\model\Config;
+use library\Pig\model\Db;
 use library\Pig\orm\Schedule;
 
 class Movie extends Schedule
@@ -70,5 +72,12 @@ class Movie extends Schedule
     {
         return [];
         // TODO: Implement validate() method.
+    }
+
+    protected function getDb(): \Zend_Db_Adapter_Mysqli
+    {
+        $config = Config::getInstance()->getConfig('db');
+        $db = new Db($config['cinema']);
+        return $db->getDb();
     }
 }

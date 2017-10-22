@@ -8,6 +8,8 @@
 
 namespace resource\orm;
 
+use library\Pig\model\Config;
+use library\Pig\model\Db;
 use library\Pig\orm\{
     Schedule,Record
 };
@@ -73,10 +75,36 @@ class Show extends Schedule
     {
         $validators = [];
 
-        $validators[] = function (Record $record) {
-            return ['status' => strlen($record->title) > 10, 'message' => "Title is too short."];
+        $validators['title'][] = function (Record $record) {
+            return ['status' => strlen($record->title) < 10, 'message' => "Title is too short."];
+        };
+
+        $validators['description'][] = function (Record $record) {
+            return ['status' => strlen($record->description) < 2, 'message' => "Description is too short."];
+        };
+
+        $validators['otherValidate'][] = function (Record $record) {
+            return ['status' => true, 'message' => 'BAD'];
         };
 
         return $validators;
+    }
+
+    protected function getPermission(): array
+    {
+        $permissions = [];
+
+        $permissions['GET'] = function (){
+            return true;
+        };
+
+        return $permissions;
+    }
+
+    protected function getDb(): \Zend_Db_Adapter_Mysqli
+    {
+        $config = Config::getInstance()->getConfig('db');
+        $db = new Db($config['cinema']);
+        return $db->getDb();
     }
 }
