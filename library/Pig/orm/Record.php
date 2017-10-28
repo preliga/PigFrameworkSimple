@@ -11,13 +11,13 @@ namespace library\Pig\orm;
 
 class Record
 {
-    protected $schedule;
+    protected $dataTemplate;
 
     protected $record;
 
-    public function __construct(array $record, Schedule $schedule)
+    public function __construct(array $record, dataTemplate $dataTemplate)
     {
-        $this->schedule = $schedule;
+        $this->dataTemplate = $dataTemplate;
 
         $this->record = $record;
     }
@@ -52,28 +52,32 @@ class Record
 
     public function isNew(string $table = null): bool
     {
-        $key = $this->schedule->getKeyAlias($table);
+        $key = $this->dataTemplate->getKeyAlias($table);
 
         return is_null($this->$key);
     }
 
-    public function reload(): void
+    public function reload()
     {
-        $key = $this->schedule->getKeyAlias();
+        $key = $this->dataTemplate->getKeyAlias();
 
-        $this->record = $this->schedule->get($this->$key)->getArray();
+        $this->record = $this->dataTemplate->get($this->$key)->getArray();
     }
 
-    public function save(array $notTables = null, array $onlyTables = null): array
+    public function save($notTables = null, $onlyTables = null, $reload = true): array
     {
-        $valid = $this->schedule->validateRecord($this);
+        $valid = $this->dataTemplate->validateRecord($this);
 
         if (!$valid['status']) {
             return $valid;
         } else {
-            $this->schedule->beforeSaveRecord($this, $notTables, $onlyTables);
-            $this->schedule->saveRecord($this, $notTables, $onlyTables);
-            $this->schedule->afterSaveRecord($this, $notTables, $onlyTables);
+            $this->dataTemplate->beforeSaveRecord($this, $notTables, $onlyTables);
+            $this->dataTemplate->saveRecord($this, $notTables, $onlyTables);
+            $this->dataTemplate->afterSaveRecord($this, $notTables, $onlyTables);
+
+            if($reload) {
+                $this->reload();
+            }
 
             return ['status' => true, 'errors' => []];
         }
@@ -81,15 +85,15 @@ class Record
 
     public function delete(array $notTables = null, array $onlyTables = null): array
     {
-        $this->schedule->beforeDeleteRecord($this, $notTables, $onlyTables);
-        $this->schedule->deleteRecord($this, $notTables, $onlyTables);
-        $this->schedule->afterDeleteRecord($this, $notTables, $onlyTables);
+        $this->dataTemplate->beforeDeleteRecord($this, $notTables, $onlyTables);
+        $this->dataTemplate->deleteRecord($this, $notTables, $onlyTables);
+        $this->dataTemplate->afterDeleteRecord($this, $notTables, $onlyTables);
 
         return ['status' => true, 'errors' => []];
     }
 
     public function validate(string $column = null): array
     {
-        return $this->schedule->validateRecord($this, $column);
+        return $this->dataTemplate->validateRecord($this, $column);
     }
 }

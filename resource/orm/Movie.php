@@ -9,12 +9,12 @@ namespace resource\orm;
 
 use library\Pig\model\Config;
 use library\Pig\model\Db;
-use library\Pig\orm\Schedule;
+use library\Pig\orm\DataTemplate;
 
-class Movie extends Schedule
+class Movie extends DataTemplate
 {
 
-    protected function createSelect(): \Zend_Db_Select
+    protected function createSelect(array $variable = []): \Zend_Db_Select
     {
         $select = $this->db->select();
 
@@ -44,6 +44,9 @@ class Movie extends Schedule
                             'showActive' => 'active',
                             'movieId',
                             'term'
+                        ],
+                        'defaultValues' => [
+                            'showActive' => 1
                         ]
                     ],
                     'movie' => [
@@ -62,6 +65,9 @@ class Movie extends Schedule
                             'poster',
                             'duration',
 
+                        ],
+                        'defaultValues' => [
+                            'movieActive' => 1,
                         ]
                     ]
                 ]

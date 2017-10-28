@@ -9,10 +9,10 @@
 
 namespace library\Pig\orm;
 
-abstract class Schedule
+abstract class DataTemplate
 {
     /**
-     * @var Schedule
+     * @var DataTemplate
      */
     protected static $instance;
 
@@ -26,7 +26,7 @@ abstract class Schedule
         $this->db = $this->getDb();
     }
 
-    public static function getInstance(): Schedule
+    public static function getInstance(): DataTemplate
     {
         $class = get_called_class();
         if (self::$instance === null) {
@@ -38,7 +38,7 @@ abstract class Schedule
 
     abstract protected function getDb(): \Zend_Db_Adapter_Mysqli;
 
-    abstract protected function createSelect(): \Zend_Db_Select;
+    abstract protected function createSelect(array $variable = []): \Zend_Db_Select;
 
     abstract protected function createTreeDependency(): array;
 
@@ -61,13 +61,13 @@ abstract class Schedule
         }
     }
 
-    private function _find($where = null, $order = null): \Zend_Db_Select
+    private function _find($where = null, $order = null, array $variable = []): \Zend_Db_Select
     {
         if (!$this->_permission("GET")) {
-            throw new \Exception("No rights (GET) to schedule: " . get_called_class());
+            throw new \Exception("No rights (GET) to dataTemplate: " . get_called_class());
         }
 
-        $select = $this->createSelect();
+        $select = $this->createSelect($variable);
 
         if (!empty($where)) {
             if (is_string($where)) {
@@ -131,8 +131,6 @@ abstract class Schedule
             }
 
         } else {
-            $treeDependency = $this->createTreeDependency();
-
             if (!is_int(key($treeDependency['keys']))) {
                 return key($treeDependency['keys']);
             } else {
@@ -147,13 +145,29 @@ abstract class Schedule
         $treeDependency = $this->createTreeDependency();
 
         if (!empty($table)) {
-
             return current($treeDependency['tables'][$table]['keys']);
 
         } else {
-            $treeDependency = $this->createTreeDependency();
-
             return current($treeDependency['keys']);
+        }
+    }
+
+    public function getDefaultValues(string $table = null): array
+    {
+        $treeDependency = $this->createTreeDependency();
+
+        if (!empty($table)) {
+
+            return $treeDependency['tables'][$table]['defaultValues'] ?? [];
+
+        } else {
+
+            $values = [];
+            foreach ($treeDependency['tables'] as $table) {
+                $values = array_merge($values, $table['defaultValues'] ?? []);
+            }
+
+            return $values;
         }
     }
 
@@ -163,11 +177,12 @@ abstract class Schedule
 
         $record = [];
 
+        $defaultValues = $this->getDefaultValues();
         foreach ($columns as $key => $val) {
             if (is_int($key)) {
-                $record[$val] = null;
+                $record[$val] = $defaultValues[$val] ?? null;
             } else {
-                $record[$key] = null;
+                $record[$key] = $defaultValues[$key] ?? null;;
             }
         }
 
@@ -266,15 +281,13 @@ abstract class Schedule
                 }
 
                 if ($record->isNew($table)) {
-
                     if ($this->_permission('PUT')) {
                         $this->db->insert($table, $bind);
-
                         $key = $this->getKeyAlias($table);
 
                         $record->$key = $this->db->lastInsertId($table);
                     } else {
-                        throw new \Exception("No rights (PUT) to schedule: " . get_called_class());
+                        throw new \Exception("No rights (PUT) to dataTemplate: " . get_called_class());
                     }
                 } else {
                     if ($this->_permission('POST')) {
@@ -286,14 +299,19 @@ abstract class Schedule
 
                         $this->db->update($table, $bind, $where);
                     } else {
-                        throw new \Exception("No rights (POST) to schedule: " . get_called_class());
+                        throw new \Exception("No rights (POST) to dataTemplate: " . get_called_class());
                     }
                 }
             }
         } catch (\Exception $e) {
             $this->db->rollBack();
 
-            return ['status' => false, 'errors' => [$e]];
+            echo "<pre>";
+            print_r($e);
+            echo "</pre>";
+            die();
+
+//            return ['status' => false, 'errors' => [$e]];
         }
 
         $this->db->commit();
@@ -369,29 +387,29 @@ abstract class Schedule
         return $collection;
     }
 
-    public function get($id): Record
+    public function get($id, array $variable = []): Record
     {
         $key = $this->getKeyName();
 
-        return $this->findOne([$key . ' = ?' => $id]);
+        return $this->findOne([$key . ' = ?' => $id], [], $variable);
     }
 
-    public function find($where = null, $order = null): Collection
+    public function find($where = null, $order = null, array $variable = []): Collection
     {
-        $select = $this->_find($where, $order);
+        $select = $this->_find($where, $order, $variable);
 
         $collection = $this->db->fetchAll($select);
 
         return $this->beforeOutput(new Collection($collection, $this));
     }
 
-    public function findOne($where = null, $order = null): Record
+    public function findOne($where = null, $order = null, array $variable = []): Record
     {
-        $select = $this->_find($where, $order);
+        $select = $this->_find($where, $order, $variable);
 
         $record = $this->db->fetchRow($select);
 
-        $collection = $this->beforeOutput(new Collection([$record], $this));
+        $collection = $this->beforeOutput(new Collection([!empty($record) ? $record : []], $this));
 
         return $collection->current();
     }

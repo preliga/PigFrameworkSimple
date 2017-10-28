@@ -13,7 +13,7 @@ class repertoire extends Admin
     public function onAction()
     {
 //        $shows = $this->getRepertoire();
-        $shows = Show::find([
+        $shows = Show::getInstance()->find([
             's.term > NOW()'
         ])->getArray();
 

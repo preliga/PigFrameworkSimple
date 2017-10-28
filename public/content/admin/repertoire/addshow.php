@@ -14,50 +14,27 @@ class addshow extends Admin
 {
     public function onAction()
     {
-        $show = Show::createRecord();
+        Show::getInstance()->test();
 
-        $show = Show::findOne([
-            's.id = ?' => 1
-        ]);
+        $movies = Movie::getInstance()->find()->getArray();
 
-        $show->title = 'Piraci';
+        $this->view->movies = $movies;
 
-        $show->save();
-
-        echo "<pre>";
-        print_r($show->getArray());
-        echo "</pre>";
-        die();
-//
-//        die(var_dump($show));
-//        $movies = $movies = Movie::find()->getArray();
-//
-//        $this->view->movies = $movies;
-//
-//        if ($this->hasPost()) {
-//            $this->saveShow();
-//            $this->view->saveCorrect = true;
-//        }
+        if ($this->hasPost()) {
+            $this->saveShow();
+            $this->view->saveCorrect = true;
+        }
     }
-
-//    public function getMovies()
-//    {
-//        $select = $this->db->select()
-//            ->from(['m' => 'movie'])
-//            ->join(['c' => 'category'], 'c.id = m.categoryId', ['category' => 'name'])
-//            ->where('m.active = 1');
-//
-//        return $this->db->fetchAll($select);
-//    }
 
     public function saveShow()
     {
         $post = $this->getPost();
 
-        $show = Show::createRecord();
+        $show = Show::getInstance()->createRecord();
 
-        die(var_dump($show));
+        $show->movieId = $post['movieId'];
+        $show->term = $post['term'];
 
-        $this->db->insert('show',['movieId' => $post['movieId'], 'term' => $post['term']]);
+        $show->save(null,['show']);
     }
 }

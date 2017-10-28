@@ -15,21 +15,21 @@ class Collection implements Iterator
 {
     protected $collection;
 
-    protected $schedule;
+    protected $dataTemplate;
 
-    public function __construct(array $collection, Schedule $schedule)
+    public function __construct(array $collection, dataTemplate $dataTemplate)
     {
-        $this->collection = $this->createCollection($collection, $schedule);
+        $this->collection = $this->createCollection($collection, $dataTemplate);
 
-        $this->schedule = $schedule;
+        $this->dataTemplate = $dataTemplate;
     }
 
-    private function createCollection(array $collection, Schedule $schedule): array
+    private function createCollection(array $collection, dataTemplate $dataTemplate): array
     {
         $collectionRecord = [];
 
         foreach ($collection as $record) {
-            $collectionRecord[] = new Record($record, $schedule);
+            $collectionRecord[] = new Record($record, $dataTemplate);
         }
 
         return $collectionRecord;
@@ -37,7 +37,7 @@ class Collection implements Iterator
 
     public function validate(string $column = null): array
     {
-        return $this->schedule->validateCollection($this, $column);
+        return $this->dataTemplate->validateCollection($this, $column);
     }
 
     public function save($notTables = null, $onlyTables = null): array
@@ -49,9 +49,9 @@ class Collection implements Iterator
         } else {
             foreach ($this as $record) {
 
-                $this->schedule->beforeSaveRecord($record, $notTables, $onlyTables);
-                $this->schedule->saveRecord($record, $notTables, $onlyTables);
-                $this->schedule->afterSaveRecord($record, $notTables, $onlyTables);
+                $this->dataTemplate->beforeSaveRecord($record, $notTables, $onlyTables);
+                $this->dataTemplate->saveRecord($record, $notTables, $onlyTables);
+                $this->dataTemplate->afterSaveRecord($record, $notTables, $onlyTables);
             }
 
             return ['status' => true, 'errors' => []];
@@ -62,17 +62,26 @@ class Collection implements Iterator
     {
         foreach ($this as $record) {
 
-            $this->schedule->beforeDeleteRecord($record, $notTables, $onlyTables);
-            $this->schedule->deleteRecord($record, $notTables, $onlyTables);
-            $this->schedule->afterDEleteRecord($record, $notTables, $onlyTables);
+            $this->dataTemplate->beforeDeleteRecord($record, $notTables, $onlyTables);
+            $this->dataTemplate->deleteRecord($record, $notTables, $onlyTables);
+            $this->dataTemplate->afterDEleteRecord($record, $notTables, $onlyTables);
         }
 
         return ['status' => true, 'errors' => []];
     }
 
-    public function getArray()
+    public function getArray(bool $deepArray = true): array
     {
-        return $this->collection;
+        if ($deepArray) {
+            $collection = [];
+            foreach ($this->collection as $record) {
+                $collection[] = $record->getArray();
+            }
+
+            return $collection;
+        } else {
+            return $this->collection;
+        }
     }
 
     public function current()

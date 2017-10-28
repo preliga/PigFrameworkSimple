@@ -2390,7 +2390,7 @@ var Popper = function () {
     }
 
     /**
-     * Schedule an update, it will run on the next UI update available
+     * dataTemplate an update, it will run on the next UI update available
      * @method scheduleUpdate
      * @memberof Popper
      */
