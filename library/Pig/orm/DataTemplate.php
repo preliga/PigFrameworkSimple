@@ -44,6 +44,9 @@ abstract class DataTemplate
 
     abstract protected function getValidators(): array;
 
+    abstract protected function getPermission(): array;
+
+
     private function _getColumns(string $table = null): array
     {
         $treeDependency = $this->createTreeDependency();
@@ -61,7 +64,7 @@ abstract class DataTemplate
         }
     }
 
-    private function _find($where = null, $order = null, array $variable = []): \Zend_Db_Select
+    private function _find($where = null, array $order = null, array $variable = []): \Zend_Db_Select
     {
         if (!$this->_permission("GET")) {
             throw new \Exception("No rights (GET) to dataTemplate: " . get_called_class());
@@ -85,6 +88,10 @@ abstract class DataTemplate
             }
         }
 
+        if (!empty($order)) {
+            $select->order($order);
+        }
+
         $treeDependency = $this->createTreeDependency();
 
         foreach ($treeDependency['tables'] as $table => $dependency) {
@@ -105,18 +112,18 @@ abstract class DataTemplate
         return $select;
     }
 
-//    public function getKeys(string $table = null)
-//    {
-//        $treeDependency = $this->createTreeDependency();
-//
-//        if (!empty($table)) {
-//            return $treeDependency['tables'][$table]['keys'];
-//        } else {
-//            $treeDependency = $this->createTreeDependency();
-//
-//            return $treeDependency['keys'];
-//        }
-//    }
+    private function _permission(string $type): bool
+    {
+        $type = strtoupper($type);
+        if (!in_array($type, ['GET', 'PUT', 'POST', 'DELETE'])) {
+            throw new \Exception("Bad type permission: '$type'");
+        }
+
+        $permission = $this->getPermission();
+
+        return empty($permission[$type]) || $permission[$type]();
+    }
+
 
     public function getKeyAlias(string $table = null): string
     {
@@ -171,6 +178,7 @@ abstract class DataTemplate
         }
     }
 
+
     public function createRecord(): Record
     {
         $columns = $this->_getColumns();
@@ -188,6 +196,7 @@ abstract class DataTemplate
 
         return new Record($record, $this);
     }
+
 
     public function validateRecord(Record $record, string $column = null): array
     {
@@ -217,23 +226,6 @@ abstract class DataTemplate
         return ['status' => empty($errors), 'errors' => $errors];
     }
 
-    protected function getPermission(): array
-    {
-        return [];
-    }
-
-    private function _permission(string $type): bool
-    {
-        $type = strtoupper($type);
-        if (!in_array($type, ['GET', 'PUT', 'POST', 'DELETE'])) {
-            throw new \Exception("Bad type permission: '$type'");
-        }
-
-        $permission = $this->getPermission();
-
-        return empty($permission[$type]) || $permission[$type]();
-    }
-
     public function validateCollection(Collection $collection, string $column = null): array
     {
         $errors = [];
@@ -250,68 +242,72 @@ abstract class DataTemplate
         return ['status' => empty($errors), 'errors' => $errors];
     }
 
-    public function beforeSaveRecord(Record $record, array $notTables = null, array $onlyTables = null)
+
+    public function beforeSaveCollection(Collection $collection, array $notTables = null, array $onlyTables = null)
     {
 
     }
 
-    public function saveRecord(Record $record, array $notTables = null, array $onlyTables = null): array
+    public function saveCollection(Collection $collection, array $notTables = null, array $onlyTables = null): array
     {
         $treeDependency = $this->createTreeDependency();
 
         $this->db->beginTransaction();
 
-        try {
-            foreach ($treeDependency['tables'] as $table => $dependency) {
+        foreach ($collection as $record) {
 
-                if (!empty($notTables) && in_array($table, $notTables)) {
-                    continue;
-                }
-                if (!empty($onlyTables) && !in_array($table, $onlyTables)) {
-                    continue;
-                }
+            try {
+                foreach ($treeDependency['tables'] as $table => $dependency) {
 
-                $bind = [];
-
-                foreach ($dependency['columns'] as $key => $val) {
-
-                    if (!$val instanceof \Zend_Db_Expr) {
-                        $bind[$val] = $record->isProperty($key) ? $record->$key : $record->$val;
+                    if (!empty($notTables) && in_array($table, $notTables)) {
+                        continue;
                     }
-                }
-
-                if ($record->isNew($table)) {
-                    if ($this->_permission('PUT')) {
-                        $this->db->insert($table, $bind);
-                        $key = $this->getKeyAlias($table);
-
-                        $record->$key = $this->db->lastInsertId($table);
-                    } else {
-                        throw new \Exception("No rights (PUT) to dataTemplate: " . get_called_class());
+                    if (!empty($onlyTables) && !in_array($table, $onlyTables)) {
+                        continue;
                     }
-                } else {
-                    if ($this->_permission('POST')) {
-                        $where = [];
 
-                        foreach ($dependency['keys'] as $key => $val) {
-                            $where[] = "$table.$val = " . $this->db->quote($record->isProperty($key) ? $record->$key : $record->$val);
+                    $bind = [];
+
+                    foreach ($dependency['columns'] as $key => $val) {
+
+                        if (!$val instanceof \Zend_Db_Expr) {
+                            $bind[$val] = $record->isProperty($key) ? $record->$key : $record->$val;
                         }
+                    }
 
-                        $this->db->update($table, $bind, $where);
+                    if ($record->isNew($table)) {
+                        if ($this->_permission('PUT')) {
+                            $this->db->insert($table, $bind);
+                            $key = $this->getKeyAlias($table);
+
+                            $record->$key = $this->db->lastInsertId($table);
+                        } else {
+                            throw new \Exception("No rights (PUT) to dataTemplate: " . get_called_class());
+                        }
                     } else {
-                        throw new \Exception("No rights (POST) to dataTemplate: " . get_called_class());
+                        if ($this->_permission('POST')) {
+                            $where = [];
+
+                            foreach ($dependency['keys'] as $key => $val) {
+                                $where[] = "$table.$val = " . $this->db->quote($record->isProperty($key) ? $record->$key : $record->$val);
+                            }
+
+                            $this->db->update($table, $bind, $where);
+                        } else {
+                            throw new \Exception("No rights (POST) to dataTemplate: " . get_called_class());
+                        }
                     }
                 }
-            }
-        } catch (\Exception $e) {
-            $this->db->rollBack();
+            } catch (\Exception $e) {
+                $this->db->rollBack();
 
-            echo "<pre>";
-            print_r($e);
-            echo "</pre>";
-            die();
+                echo "<pre>";
+                print_r($e);
+                echo "</pre>";
+                die();
 
 //            return ['status' => false, 'errors' => [$e]];
+            }
         }
 
         $this->db->commit();
@@ -319,57 +315,60 @@ abstract class DataTemplate
         return ['status' => true, 'errors' => []];
     }
 
-    public function afterSaveRecord(Record $record, array $notTables = null, array $onlyTables = null)
+    public function afterSaveCollection(Collection $collection, array $notTables = null, array $onlyTables = null)
     {
 
     }
 
-    public function beforeDeleteRecord(Record $record, array $notTables = null, array $onlyTables = null)
+
+    public function beforeDeleteCollection(Collection $collection, array $notTables = null, array $onlyTables = null)
     {
 
     }
 
-    public function deleteRecord(Record $record, array $notTables = null, array $onlyTables = null): bool
+    public function deleteCollection(Collection $collection, array $notTables = null, array $onlyTables = null): bool
     {
         $treeDependency = $this->createTreeDependency();
 
         $this->db->beginTransaction();
 
-        try {
-            foreach ($treeDependency['tables'] as $table => $dependency) {
+        foreach ($collection as $record) {
+            try {
+                foreach ($treeDependency['tables'] as $table => $dependency) {
 
-                if (!empty($notTables) && in_array($table, $notTables)) {
-                    continue;
-                }
-                if (!empty($onlyTables) && !in_array($table, $onlyTables)) {
-                    continue;
-                }
-
-                $bind = [];
-
-                foreach ($dependency['columns'] as $key => $val) {
-
-                    if (!$val instanceof \Zend_Db_Expr) {
-                        $bind[$val] = $record->isProperty($key) ? $record->$key : $record->$val;
+                    if (!empty($notTables) && in_array($table, $notTables)) {
+                        continue;
                     }
-                }
-
-                if ($record->isNew($table)) {
-                    throw new \Exception("This record was not save in date base");
-                } else {
-                    $where = [];
-
-                    foreach ($dependency['keys'] as $key => $val) {
-                        $where[] = "$table.$val = " . $this->db->quote($record->isProperty($key) ? $record->$key : $record->$val);
+                    if (!empty($onlyTables) && !in_array($table, $onlyTables)) {
+                        continue;
                     }
 
-                    $this->db->delete($table, $where);
+                    $bind = [];
+
+                    foreach ($dependency['columns'] as $key => $val) {
+
+                        if (!$val instanceof \Zend_Db_Expr) {
+                            $bind[$val] = $record->isProperty($key) ? $record->$key : $record->$val;
+                        }
+                    }
+
+                    if ($record->isNew($table)) {
+                        throw new \Exception("This record was not save in date base");
+                    } else {
+                        $where = [];
+
+                        foreach ($dependency['keys'] as $key => $val) {
+                            $where[] = "$table.$val = " . $this->db->quote($record->isProperty($key) ? $record->$key : $record->$val);
+                        }
+
+                        $this->db->delete($table, $where);
+                    }
                 }
+            } catch (\Exception $e) {
+                $this->db->rollBack();
+
+                die(var_dump($e));
             }
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-
-            die(var_dump($e));
         }
 
         $this->db->commit();
@@ -377,15 +376,17 @@ abstract class DataTemplate
         return true;
     }
 
-    public function afterDeleteRecord(Record $record, array $notTables = null, array $onlyTables = null)
+    public function afterDeleteCollection(Collection $collection, array $notTables = null, array $onlyTables = null)
     {
 
     }
+
 
     public function beforeOutput(Collection $collection): Collection
     {
         return $collection;
     }
+
 
     public function get($id, array $variable = []): Record
     {
@@ -394,7 +395,7 @@ abstract class DataTemplate
         return $this->findOne([$key . ' = ?' => $id], [], $variable);
     }
 
-    public function find($where = null, $order = null, array $variable = []): Collection
+    public function find($where = null, array $order = null, array $variable = []): Collection
     {
         $select = $this->_find($where, $order, $variable);
 
@@ -403,7 +404,7 @@ abstract class DataTemplate
         return $this->beforeOutput(new Collection($collection, $this));
     }
 
-    public function findOne($where = null, $order = null, array $variable = []): Record
+    public function findOne($where = null, array $order = null, array $variable = []): Record
     {
         $select = $this->_find($where, $order, $variable);
 

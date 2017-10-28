@@ -12,13 +12,11 @@ use library\Pig\model\{
     Config, Db
 };
 use library\Pig\orm\{
-    DataTemplate, Record, behavior\Saving
+    DataTemplate, Record
 };
 
 class Show extends DataTemplate
 {
-    use Saving;
-
     protected function createSelect(array $variable = []): \Zend_Db_Select
     {
         $select = $this->db->select()

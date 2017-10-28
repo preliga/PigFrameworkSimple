@@ -14,8 +14,6 @@ class addshow extends Admin
 {
     public function onAction()
     {
-        Show::getInstance()->test();
-
         $movies = Movie::getInstance()->find()->getArray();
 
         $this->view->movies = $movies;

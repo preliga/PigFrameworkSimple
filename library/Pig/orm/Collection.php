@@ -13,23 +13,33 @@ use Iterator;
 
 class Collection implements Iterator
 {
+    /**
+     * @var array
+     */
     protected $collection;
 
+    /**
+     * @var DataTemplate
+     */
     protected $dataTemplate;
 
-    public function __construct(array $collection, dataTemplate $dataTemplate)
+    public function __construct($collection, DataTemplate $dataTemplate)
     {
         $this->collection = $this->createCollection($collection, $dataTemplate);
 
         $this->dataTemplate = $dataTemplate;
     }
 
-    private function createCollection(array $collection, dataTemplate $dataTemplate): array
+    private function createCollection(array $collection, DataTemplate $dataTemplate): array
     {
         $collectionRecord = [];
 
         foreach ($collection as $record) {
-            $collectionRecord[] = new Record($record, $dataTemplate);
+            if(is_array($record)) {
+                $collectionRecord[] = new Record($record, $dataTemplate);
+            } else {
+                $collectionRecord[] = $record;
+            }
         }
 
         return $collectionRecord;
@@ -40,18 +50,36 @@ class Collection implements Iterator
         return $this->dataTemplate->validateCollection($this, $column);
     }
 
-    public function save($notTables = null, $onlyTables = null): array
+    public function reload()
+    {
+        $keyName = $this->dataTemplate->getKeyName();
+        $keyAlias = $this->dataTemplate->getKeyAlias();
+
+        $keysArray = [];
+
+        foreach ($this as $record) {
+            $keysArray[] = $record->$keyAlias;
+        }
+
+        $collection = $this->dataTemplate->find(["$keyName in (?)" => $keysArray]);
+
+        $this->collection = $collection->collection;
+    }
+
+    public function save($notTables = null, $onlyTables = null, $reload = true): array
     {
         $valid = $this->validate();
 
         if (!$valid['status']) {
             return $valid;
         } else {
-            foreach ($this as $record) {
 
-                $this->dataTemplate->beforeSaveRecord($record, $notTables, $onlyTables);
-                $this->dataTemplate->saveRecord($record, $notTables, $onlyTables);
-                $this->dataTemplate->afterSaveRecord($record, $notTables, $onlyTables);
+            $this->dataTemplate->beforeSaveCollection($this, $notTables, $onlyTables);
+            $this->dataTemplate->saveCollection($this, $notTables, $onlyTables);
+            $this->dataTemplate->afterSaveCollection($this, $notTables, $onlyTables);
+
+            if ($reload) {
+                $this->reload();
             }
 
             return ['status' => true, 'errors' => []];
@@ -60,12 +88,9 @@ class Collection implements Iterator
 
     public function delete($notTables = null, $onlyTables = null): array
     {
-        foreach ($this as $record) {
-
-            $this->dataTemplate->beforeDeleteRecord($record, $notTables, $onlyTables);
-            $this->dataTemplate->deleteRecord($record, $notTables, $onlyTables);
-            $this->dataTemplate->afterDEleteRecord($record, $notTables, $onlyTables);
-        }
+        $this->dataTemplate->beforeDeleteCollection($this, $notTables, $onlyTables);
+        $this->dataTemplate->deleteCollection($this, $notTables, $onlyTables);
+        $this->dataTemplate->afterDEleteCollection($this, $notTables, $onlyTables);
 
         return ['status' => true, 'errors' => []];
     }

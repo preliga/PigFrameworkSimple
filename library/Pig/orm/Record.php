@@ -11,11 +11,17 @@ namespace library\Pig\orm;
 
 class Record
 {
+    /**
+     * @var DataTemplate
+     */
     protected $dataTemplate;
 
+    /**
+     * @var array
+     */
     protected $record;
 
-    public function __construct(array $record, dataTemplate $dataTemplate)
+    public function __construct(array $record, DataTemplate $dataTemplate)
     {
         $this->dataTemplate = $dataTemplate;
 
@@ -71,9 +77,11 @@ class Record
         if (!$valid['status']) {
             return $valid;
         } else {
-            $this->dataTemplate->beforeSaveRecord($this, $notTables, $onlyTables);
-            $this->dataTemplate->saveRecord($this, $notTables, $onlyTables);
-            $this->dataTemplate->afterSaveRecord($this, $notTables, $onlyTables);
+
+            $collection = new Collection([$this], $this->dataTemplate);
+            $this->dataTemplate->beforeSaveCollection($collection, $notTables, $onlyTables);
+            $this->dataTemplate->saveCollection($collection, $notTables, $onlyTables);
+            $this->dataTemplate->afterSaveCollection($collection, $notTables, $onlyTables);
 
             if($reload) {
                 $this->reload();
@@ -85,9 +93,11 @@ class Record
 
     public function delete(array $notTables = null, array $onlyTables = null): array
     {
-        $this->dataTemplate->beforeDeleteRecord($this, $notTables, $onlyTables);
-        $this->dataTemplate->deleteRecord($this, $notTables, $onlyTables);
-        $this->dataTemplate->afterDeleteRecord($this, $notTables, $onlyTables);
+        $collection = new Collection([$this], $this->dataTemplate);
+
+        $this->dataTemplate->beforeDeleteCollection($collection, $notTables, $onlyTables);
+        $this->dataTemplate->deleteCollection($collection, $notTables, $onlyTables);
+        $this->dataTemplate->afterDeleteCollection($collection, $notTables, $onlyTables);
 
         return ['status' => true, 'errors' => []];
     }

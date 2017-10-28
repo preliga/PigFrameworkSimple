@@ -7,8 +7,9 @@
  */
 namespace resource\orm;
 
-use library\Pig\model\Config;
-use library\Pig\model\Db;
+use library\Pig\model\{
+    Config, Db
+};
 use library\Pig\orm\DataTemplate;
 
 class Movie extends DataTemplate
@@ -77,7 +78,11 @@ class Movie extends DataTemplate
     protected function getValidators(): array
     {
         return [];
-        // TODO: Implement validate() method.
+    }
+
+    protected function getPermission(): array
+    {
+        return [];
     }
 
     protected function getDb(): \Zend_Db_Adapter_Mysqli
