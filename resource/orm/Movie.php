@@ -19,7 +19,7 @@ class Movie extends DataTemplate
     {
         $select = $this->db->select();
 
-        $select->from(['m' => 'movie'])
+        $select->from(['m' => 'movie'], [])
             ->join(['s' => 'show'], 's.movieId = m.id AND s.term >= NOW() AND s.term <= DATE_ADD(NOW(), INTERVAL 7 DAY)', [])
             ->where('m.active = 1')
             ->group('m.id');

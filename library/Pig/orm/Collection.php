@@ -35,7 +35,7 @@ class Collection implements Iterator
         $collectionRecord = [];
 
         foreach ($collection as $record) {
-            if(is_array($record)) {
+            if (is_array($record)) {
                 $collectionRecord[] = new Record($record, $dataTemplate);
             } else {
                 $collectionRecord[] = $record;
@@ -45,9 +45,9 @@ class Collection implements Iterator
         return $collectionRecord;
     }
 
-    public function validate(string $column = null): array
+    public function getHash()
     {
-        return $this->dataTemplate->validateCollection($this, $column);
+        return sha1(json_encode($this->getArray(true)));
     }
 
     public function reload()
@@ -64,6 +64,12 @@ class Collection implements Iterator
         $collection = $this->dataTemplate->find(["$keyName in (?)" => $keysArray]);
 
         $this->collection = $collection->collection;
+    }
+
+
+    public function validate(string $column = null): array
+    {
+        return $this->dataTemplate->validateCollection($this, $column);
     }
 
     public function save($notTables = null, $onlyTables = null, $reload = true): array
@@ -108,6 +114,85 @@ class Collection implements Iterator
             return $this->collection;
         }
     }
+
+
+    public function filter($callback): Collection
+    {
+        $collection = [];
+        foreach ($this as $record) {
+            if ($callback($record)) {
+                $collection[] = $record;
+            }
+        }
+
+        return new Collection($collection, $this->dataTemplate);
+    }
+
+    public function marge(Collection $collection, $withDouble = true): Collection
+    {
+        if ($withDouble) {
+            $collectionNew = array_merge($this->collection, $collection->collection);
+        } else {
+
+
+            $getCollectionWithoutDouble = function ($collection, &$collectionNew) {
+                foreach ($collection as $newRecord) {
+
+                    $isUnique = true;
+
+                    $hash = $newRecord->getHash();
+
+                    foreach ($collectionNew as $oldRecord) {
+                        if ($hash == $oldRecord->getHash()) {
+                            $isUnique = false;
+                            break;
+                        }
+                    }
+
+                    if ($isUnique) {
+                        $collectionNew[] = $newRecord;
+                    }
+                }
+
+                return $collectionNew;
+            };
+
+            $collectionNew = [];
+
+            $getCollectionWithoutDouble($this->collection, $collectionNew);
+            $getCollectionWithoutDouble($collection->collection, $collectionNew);
+        }
+
+        return new Collection($collectionNew, $this->dataTemplate);
+    }
+
+    public function addRecord(Record $record, $withDouble = true)
+    {
+        if ($withDouble) {
+            $this->collection[] = $record;
+        } else {
+
+            $isUnique = true;
+
+            $hash = $record->getHash();
+
+            foreach ($this->collection as $oldRecord) {
+                if ($hash == $oldRecord->getHash()) {
+                    $isUnique = false;
+                    break;
+                }
+            }
+
+            if ($isUnique) {
+                $this->collection[] = $record;
+            }
+        }
+    }
+
+    public function reset(){
+        $this->collection = [];
+    }
+
 
     public function current()
     {

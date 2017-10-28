@@ -36,6 +36,7 @@ abstract class DataTemplate
         return self::$instance;
     }
 
+
     abstract protected function getDb(): \Zend_Db_Adapter_Mysqli;
 
     abstract protected function createSelect(array $variable = []): \Zend_Db_Select;

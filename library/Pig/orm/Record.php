@@ -46,6 +46,11 @@ class Record
         }
     }
 
+    public function getHash()
+    {
+        return sha1(json_encode($this->record));
+    }
+
     public function isProperty($name): bool
     {
         return array_key_exists($name, $this->record);
