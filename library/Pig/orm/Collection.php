@@ -54,7 +54,7 @@ class Collection implements Iterator
         $newRecords = [];
 
         foreach ($this as $record) {
-            if(!empty($record->$keyAlias) || is_int($record->$keyAlias)) {
+            if (!empty($record->$keyAlias) || is_int($record->$keyAlias)) {
                 $keysArray[] = $record->$keyAlias;
             } else {
                 $newRecords[] = $record;
@@ -86,7 +86,7 @@ class Collection implements Iterator
 
     public function save($notTables = null, $onlyTables = null, bool $reload = true): array
     {
-        if(empty($this->collection)){
+        if (empty($this->collection)) {
             return ['status' => false, 'errors' => ["Empty collection"]];
         }
 
@@ -110,7 +110,7 @@ class Collection implements Iterator
 
     public function delete($notTables = null, $onlyTables = null): array
     {
-        if(empty($this->collection)){
+        if (empty($this->collection)) {
             return ['status' => false, 'errors' => ["Empty collection"]];
         }
 
@@ -225,7 +225,7 @@ class Collection implements Iterator
 
     public function set($data, bool $reload = true)
     {
-        if(empty($this->collection)){
+        if (empty($this->collection)) {
             return ['status' => false, 'errors' => ["Empty collection"]];
         }
 
@@ -247,6 +247,12 @@ class Collection implements Iterator
         }
     }
 
+    public function load(array $data)
+    {
+        foreach ($this as $record) {
+            $record->load($data);
+        }
+    }
 
     public function current()
     {

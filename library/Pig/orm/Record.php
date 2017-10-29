@@ -68,12 +68,27 @@ class Record
         return is_null($this->$key);
     }
 
+
     public function reload()
     {
         $key = $this->dataTemplate->getKeyAlias();
 
         $this->record = $this->dataTemplate->get($this->$key)->getArray();
     }
+
+    public function load($data){
+
+        if($data instanceof Record){
+            $data = $data->record;
+        }
+
+        foreach ($data as $key => $val) {
+            if($this->isProperty($key)) {
+                $this->record[$key] = $val;
+            }
+        }
+    }
+
 
     public function save($notTables = null, $onlyTables = null, bool $reload = true): array
     {

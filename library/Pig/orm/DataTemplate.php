@@ -12,9 +12,9 @@ namespace library\Pig\orm;
 abstract class DataTemplate
 {
     /**
-     * @var DataTemplate
+     * @var array
      */
-    protected static $instance;
+    protected static $instance = [];
 
     /**
      * @var \Zend_Db_Adapter_Mysqli
@@ -29,11 +29,12 @@ abstract class DataTemplate
     public static function getInstance(): DataTemplate
     {
         $class = get_called_class();
-        if (self::$instance === null) {
-            self::$instance = new $class();
+
+        if (empty(self::$instance[$class])) {
+            self::$instance[$class] = new $class();
         }
 
-        return self::$instance;
+        return self::$instance[$class];
     }
 
 
@@ -418,11 +419,7 @@ abstract class DataTemplate
 
         $this->db->commit();
 
-        foreach ($collection as $record) {
-            foreach ($data as $key => $val) {
-                $record->$key = $val;
-            }
-        }
+        $collection->load($data);
 
         return ['status' => true, 'errors' => []];
     }
