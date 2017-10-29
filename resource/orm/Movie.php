@@ -19,7 +19,7 @@ class Movie extends DataTemplate
     {
         $select = $this->db->select();
 
-        $select->from(['m' => 'movie'], [])
+        $select->from(['m' => 'movie'], ['id'])
             ->where('m.active = 1')
         ;
 

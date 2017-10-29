@@ -47,6 +47,14 @@ abstract class DataTemplate
 
     abstract protected function getPermission(): array;
 
+    private function _getSelect(array $variable = []): \Zend_Db_Select
+    {
+        $select = $this->createSelect($variable);
+        $select->reset(\Zend_Db_Select::COLUMNS);
+
+        return $select;
+    }
+
 
     private function _getColumns(string $table = null): array
     {
@@ -122,7 +130,7 @@ abstract class DataTemplate
 
     private function _aggregateFunction(string $typ, $column, $where = null, $group = null, array $variable = [])
     {
-        $select = $this->createSelect($variable);
+        $select = $this->_getSelect($variable);
 
         $select->columns(new \Zend_Db_Expr("$typ(" . $this->db->quote($column) . ")"));
 
@@ -140,7 +148,7 @@ abstract class DataTemplate
             throw new \Exception("No rights (GET) to dataTemplate: " . get_called_class());
         }
 
-        $select = $this->createSelect($variable);
+        $select = $this->_getSelect($variable);
 
         $this->_setWhere($select, $where);
         $this->_setOrder($select, $order);
