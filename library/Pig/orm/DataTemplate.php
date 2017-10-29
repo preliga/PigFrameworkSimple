@@ -352,8 +352,6 @@ abstract class DataTemplate
                 print_r($e);
                 echo "</pre>";
                 die();
-
-//            return ['status' => false, 'errors' => [$e]];
             }
         }
 
@@ -366,6 +364,74 @@ abstract class DataTemplate
     {
 
     }
+
+
+    public function beforeSetCollection(Collection $collection, $data)
+    {
+
+    }
+
+    public function setColumns(Collection $collection, $data)
+    {
+        $treeDependency = $this->createTreeDependency();
+
+        $tables = [];
+
+        foreach ($treeDependency['tables'] as $tablesName => $table) {
+            foreach ($table['columns'] as $key => $val) {
+                if (is_int($key)) {
+                    $alias = $val;
+                } else {
+                    $alias = $key;
+                }
+
+                if (isset($data[$alias])) {
+                    if (empty($tables[$tablesName])) {
+                        $tables[$tablesName] = [];
+                    }
+
+                    $tables[$tablesName][$val] = $data[$alias];
+                }
+            }
+        }
+
+        $this->db->beginTransaction();
+
+        try {
+            foreach ($tables as $tablesName => $bind) {
+
+                $keys = $collection->getKeysCollection($tablesName);
+                $this->db->update($tablesName, $bind, ["{$keys['column']} in (?)" => $keys['keys']]);
+
+                foreach ($keys['newRecord'] as $record) {
+                    $record->save(null, [$tablesName]);
+                }
+            }
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+
+            echo "<pre>";
+            print_r($e);
+            echo "</pre>";
+            die();
+        }
+
+        $this->db->commit();
+
+        foreach ($collection as $record) {
+            foreach ($data as $key => $val) {
+                $record->$key = $val;
+            }
+        }
+
+        return ['status' => true, 'errors' => []];
+    }
+
+    public function afterSetCollection(Collection $collection, $data)
+    {
+
+    }
+
 
 
     public function beforeDeleteCollection(Collection $collection, array $notTables = null, array $onlyTables = null)

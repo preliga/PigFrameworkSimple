@@ -75,7 +75,7 @@ class Record
         $this->record = $this->dataTemplate->get($this->$key)->getArray();
     }
 
-    public function save($notTables = null, $onlyTables = null, $reload = true): array
+    public function save($notTables = null, $onlyTables = null, bool $reload = true): array
     {
         $valid = $this->dataTemplate->validateRecord($this);
 

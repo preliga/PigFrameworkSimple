@@ -23,6 +23,7 @@ class Show extends DataTemplate
             ->from(['s' => 'show'], [])
             ->join(['m' => 'movie'], 's.movieId = m.id', [])
             ->where('s.active = 1')
+            ->where('m.active = 1')
             ->order('s.term');
 
         return $select;
@@ -81,13 +82,13 @@ class Show extends DataTemplate
     {
         $validators = [];
 
-        $validators['title'][] = function (Record $record) {
-            return ['status' => strlen($record->title) < 10, 'message' => "Title is too short."];
-        };
+//        $validators['title'][] = function (Record $record) {
+//            return ['status' => strlen($record->title) < 10, 'message' => "Title is too short."];
+//        };
 
-        $validators['description'][] = function (Record $record) {
-            return ['status' => strlen($record->description) < 2, 'message' => "Description is too short."];
-        };
+//        $validators['description'][] = function (Record $record) {
+//            return ['status' => strlen($record->description) < 2, 'message' => "Description is too short."];
+//        };
 
         $validators['otherValidate'][] = function (Record $record) {
             return ['status' => true, 'message' => 'BAD'];

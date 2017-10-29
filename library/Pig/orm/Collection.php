@@ -25,12 +25,12 @@ class Collection implements Iterator
 
     public function __construct($collection, DataTemplate $dataTemplate)
     {
-        $this->collection = $this->createCollection($collection, $dataTemplate);
+        $this->collection = $this->_createCollection($collection, $dataTemplate);
 
         $this->dataTemplate = $dataTemplate;
     }
 
-    private function createCollection(array $collection, DataTemplate $dataTemplate): array
+    private function _createCollection(array $collection, DataTemplate $dataTemplate): array
     {
         $collectionRecord = [];
 
@@ -45,6 +45,25 @@ class Collection implements Iterator
         return $collectionRecord;
     }
 
+    public function getKeysCollection($table = null)
+    {
+        $keyName = $this->dataTemplate->getKeyName($table);
+        $keyAlias = $this->dataTemplate->getKeyAlias($table);
+
+        $keysArray = [];
+        $newRecords = [];
+
+        foreach ($this as $record) {
+            if(!empty($record->$keyAlias) || is_int($record->$keyAlias)) {
+                $keysArray[] = $record->$keyAlias;
+            } else {
+                $newRecords[] = $record;
+            }
+        }
+
+        return ['column' => $keyName, 'keys' => $keysArray, 'newRecords' => $newRecords];
+    }
+
     public function getHash()
     {
         return sha1(json_encode($this->getArray(true)));
@@ -52,16 +71,9 @@ class Collection implements Iterator
 
     public function reload()
     {
-        $keyName = $this->dataTemplate->getKeyName();
-        $keyAlias = $this->dataTemplate->getKeyAlias();
+        $keys = $this->getKeysCollection();
 
-        $keysArray = [];
-
-        foreach ($this as $record) {
-            $keysArray[] = $record->$keyAlias;
-        }
-
-        $collection = $this->dataTemplate->find(["$keyName in (?)" => $keysArray]);
+        $collection = $this->dataTemplate->find(["{$keys['column']} in (?)" => $keys['keys']]);
 
         $this->collection = $collection->collection;
     }
@@ -72,8 +84,12 @@ class Collection implements Iterator
         return $this->dataTemplate->validateCollection($this, $column);
     }
 
-    public function save($notTables = null, $onlyTables = null, $reload = true): array
+    public function save($notTables = null, $onlyTables = null, bool $reload = true): array
     {
+        if(empty($this->collection)){
+            return ['status' => false, 'errors' => ["Empty collection"]];
+        }
+
         $valid = $this->validate();
 
         if (!$valid['status']) {
@@ -94,6 +110,10 @@ class Collection implements Iterator
 
     public function delete($notTables = null, $onlyTables = null): array
     {
+        if(empty($this->collection)){
+            return ['status' => false, 'errors' => ["Empty collection"]];
+        }
+
         $this->dataTemplate->beforeDeleteCollection($this, $notTables, $onlyTables);
         $this->dataTemplate->deleteCollection($this, $notTables, $onlyTables);
         $this->dataTemplate->afterDEleteCollection($this, $notTables, $onlyTables);
@@ -130,6 +150,10 @@ class Collection implements Iterator
 
     public function marge(Collection $collection, $withDouble = true): Collection
     {
+        if (get_class($this->dataTemplate) != get_class($collection->dataTemplate)) {
+            throw new \Exception("Bad collection dataTemplate");
+        }
+
         if ($withDouble) {
             $collectionNew = array_merge($this->collection, $collection->collection);
         } else {
@@ -168,6 +192,10 @@ class Collection implements Iterator
 
     public function addRecord(Record $record, $withDouble = true)
     {
+        if (get_class($this->dataTemplate) != get_class($record->dataTemplate)) {
+            throw new \Exception("Bad record dataTemplate");
+        }
+
         if ($withDouble) {
             $this->collection[] = $record;
         } else {
@@ -189,8 +217,34 @@ class Collection implements Iterator
         }
     }
 
-    public function reset(){
+    public function reset()
+    {
         $this->collection = [];
+    }
+
+
+    public function set($data, bool $reload = true)
+    {
+        if(empty($this->collection)){
+            return ['status' => false, 'errors' => ["Empty collection"]];
+        }
+
+        $valid = $this->validate();
+
+        if (!$valid['status']) {
+            return $valid;
+        } else {
+
+            $this->dataTemplate->beforeSetCollection($this, $data);
+            $this->dataTemplate->setColumns($this, $data);
+            $this->dataTemplate->afterSetCollection($this, $data);
+
+            if ($reload) {
+                $this->reload();
+            }
+
+            return ['status' => true, 'errors' => []];
+        }
     }
 
 
