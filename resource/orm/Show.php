@@ -111,7 +111,7 @@ class Show extends DataTemplate
     protected function getDb(): \Zend_Db_Adapter_Mysqli
     {
         $config = Config::getInstance()->getConfig('db');
-        $db = new Db($config['cinema']);
-        return $db->getDb();
+        $db = Db::getInstance($config['cinema'], 'cinema');
+        return  $db->getDb();
     }
 }

@@ -7,6 +7,7 @@
 
 namespace library\Pig;
 
+use library\Pig\model\Config;
 use library\Pig\model\PigException;
 
 /**
@@ -30,19 +31,16 @@ class Router
      */
     public function route(string $url)
     {
+        $appPath = Config::getInstance()->getConfig('appPath');
         $action = null;
         if (empty($url) || $url == '/' || $url == '/index.php') {
-            $file = 'content/index';
-//            if(file_exists("$file.1php")) {
-                require "$file.php";
-                $action = new \index($file);
-//            } else {
-//                throw new PigException("Not found action: $file");
-//            }
+            $file = "content{$appPath}/index";
+            require "{$file}.php";
+            $action = new \index($file);
         } else {
 
             $array_url = explode("/", $url);
-            $path = 'content';
+            $path = "content{$appPath}";
 
             foreach ($array_url as $param) {
                 $path = $path . $param;

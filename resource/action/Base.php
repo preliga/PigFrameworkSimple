@@ -8,7 +8,7 @@ namespace resource\action;
 
 use library\Pig\action\Action;
 use library\Pig\model\Config;
-use resource\model\Db;
+use library\Pig\model\Db;
 use Zend_Db_Adapter_Mysqli;
 
 abstract class Base extends Action
@@ -29,7 +29,7 @@ abstract class Base extends Action
         $this->definedCSS();
 
         $config = Config::getInstance()->getConfig('db');
-        $db = new Db($config['cinema']);
+        $db = Db::getInstance($config['cinema'], 'cinema');
         $this->db = $db->getDb();
     }
 

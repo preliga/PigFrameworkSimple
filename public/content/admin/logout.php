@@ -5,7 +5,7 @@
  * User: Piotr
  */
 
-use library\Pig\Session;
+use library\Pig\model\Session;
 use resource\action\Base\Admin;
 
 class logout extends Admin

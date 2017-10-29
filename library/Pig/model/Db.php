@@ -18,11 +18,6 @@ class Db
     /**
      * @var Zend_Db_Adapter_Mysqli
      */
-    private static $adapter;
-
-    /**
-     * @var Zend_Db_Adapter_Mysqli
-     */
     protected $db;
 
     /**
@@ -30,11 +25,22 @@ class Db
      */
     protected $config;
 
+    protected static $instances = [];
+
+    public static function getInstance(array $config, string $name)
+    {
+        if (empty(self::$instances[$name])) {
+            self::$instances[$name] = new self($config);
+        }
+
+        return self::$instances[$name];
+    }
+
     /**
      * Db constructor.
      * @param $config
      */
-    public function __construct(array $config)
+    private function __construct(array $config)
     {
         $this->config = $config;
 
@@ -45,13 +51,9 @@ class Db
      * @param $config
      * @return Zend_Db_Adapter_Mysqli
      */
-    private static function connect($config): Zend_Db_Adapter_Mysqli
+    private function connect($config): Zend_Db_Adapter_Mysqli
     {
-        if (empty(self::$adapter)) {
-            return new Zend_Db_Adapter_Mysqli($config);
-        } else {
-            return self::$adapter;
-        }
+        return new Zend_Db_Adapter_Mysqli($config);
     }
 
     /**

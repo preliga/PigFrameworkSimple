@@ -22,7 +22,7 @@
                     <div class="carousel-item {if $i == 0}active{/if}">
                         <img class="d-block img-fluid w-100" src="data:image/png;base64,{if !empty($movie['poster'])} {$movie['poster']} {else} {$emptyPoster} {/if}" style="width: 600px; height: 400px;" alt="">
                         <div class="carousel-caption d-none d-md-block">
-                            <h1 class="text-shadow" style="cursor: pointer;" onclick="window.location = '/movie/movie?movieId={$movie['id']}'">
+                            <h1 class="text-shadow" style="cursor: pointer;" onclick="window.location = '/movie/movie?movieId={$movie['movieId']}'">
                                 <strong>
                                     {$movie['title']}
                                 </strong>

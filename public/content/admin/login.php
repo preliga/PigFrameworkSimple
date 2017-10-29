@@ -10,7 +10,7 @@ use resource\action\Base;
 
 class login extends Base
 {
-    public function permission()
+    public function permissionBase()
     {
         $session = Session::get('session');
         if (!empty($session)) {

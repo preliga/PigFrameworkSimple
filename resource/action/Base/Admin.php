@@ -27,7 +27,7 @@ abstract class Admin extends Base
         }
 
         $select = $this->db->select()
-            ->from('admin', ['name', 'lastName', 'login'])
+            ->from('admin', ['id', 'name', 'lastName', 'login'])
             ->where('session = ?', $session)
         ;
 

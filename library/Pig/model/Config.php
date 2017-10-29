@@ -57,7 +57,7 @@ class Config
      * @param string $conf
      * @return array
      */
-    public function getConfig(string $conf): array
+    public function getConfig(string $conf)
     {
         return $this->config[$conf] ?? null;
     }

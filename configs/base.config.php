@@ -5,5 +5,5 @@
  */
 
 return [
-
+    'appPath' => "/"
 ];
