@@ -20,9 +20,8 @@ class Movie extends DataTemplate
         $select = $this->db->select();
 
         $select->from(['m' => 'movie'], [])
-            ->join(['s' => 'show'], 's.movieId = m.id AND s.term >= NOW() AND s.term <= DATE_ADD(NOW(), INTERVAL 7 DAY)', [])
             ->where('m.active = 1')
-            ->group('m.id');
+        ;
 
         return $select;
     }
@@ -32,24 +31,24 @@ class Movie extends DataTemplate
         return
             [
                 'keys' => [
-                    'showId' => 's.id',
+                    'movieId' => 'm.id',
                 ],
                 'tables' => [
-                    'show' => [
-                        'alias' => 's',
-                        'keys' => [   /// może ustalić tylko jeden ??
-                            'showId' => 'id',
-                        ],
-                        'columns' => [
-                            'showId' => 'id',
-                            'showActive' => 'active',
-                            'movieId',
-                            'term'
-                        ],
-                        'defaultValues' => [
-                            'showActive' => 1
-                        ]
-                    ],
+//                    'show' => [
+//                        'alias' => 's',
+//                        'keys' => [   /// może ustalić tylko jeden ??
+//                            'showId' => 'id',
+//                        ],
+//                        'columns' => [
+//                            'showId' => 'id',
+//                            'showActive' => 'active',
+//                            'movieId',
+//                            'term'
+//                        ],
+//                        'defaultValues' => [
+//                            'showActive' => 1
+//                        ]
+//                    ],
                     'movie' => [
                         'alias' => 'm',
                         'keys' => [

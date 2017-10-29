@@ -65,34 +65,8 @@ abstract class DataTemplate
         }
     }
 
-    private function _find($where = null, array $order = null, array $variable = []): \Zend_Db_Select
+    private function _setColumns(\Zend_Db_Select $select)
     {
-        if (!$this->_permission("GET")) {
-            throw new \Exception("No rights (GET) to dataTemplate: " . get_called_class());
-        }
-
-        $select = $this->createSelect($variable);
-
-        if (!empty($where)) {
-            if (is_string($where)) {
-                $select->where($where);
-            } else if (is_array($where)) {
-                foreach ($where as $key => $val) {
-                    if (is_int($key)) {
-                        $select->where($val);
-                    } else {
-                        $select->where($key, $val);
-                    }
-                }
-            } else {
-                throw new \Exception('Bad typ "where". Excepted array or string.');
-            }
-        }
-
-        if (!empty($order)) {
-            $select->order($order);
-        }
-
         $treeDependency = $this->createTreeDependency();
 
         foreach ($treeDependency['tables'] as $table => $dependency) {
@@ -109,6 +83,70 @@ abstract class DataTemplate
                 $select->columns($column, $alias);
             }
         }
+    }
+
+
+    private function _setWhere(\Zend_Db_Select $select, $where)
+    {
+        if (!empty($where)) {
+            if (is_string($where)) {
+                $select->where($where);
+            } else if (is_array($where)) {
+                foreach ($where as $key => $val) {
+                    if (is_int($key)) {
+                        $select->where($val);
+                    } else {
+                        $select->where($key, $val);
+                    }
+                }
+            } else {
+                throw new \Exception('Bad typ "where". Excepted array or string.');
+            }
+        }
+    }
+
+    private function _setOrder(\Zend_Db_Select $select, $order)
+    {
+        if (!empty($order)) {
+            $select->order($order);
+        }
+    }
+
+    private function _setGroup(\Zend_Db_Select $select, $group)
+    {
+        if (!empty($group)) {
+            $select->group($group);
+        }
+    }
+
+
+    private function _aggregateFunction(string $typ, $column, $where = null, $group = null, array $variable = [])
+    {
+        $select = $this->createSelect($variable);
+
+        $select->columns(new \Zend_Db_Expr("$typ(" . $this->db->quote($column) . ")"));
+
+        $this->_setColumns($select);
+        $this->_setWhere($select, $where);
+        $this->_setGroup($select, $group);
+
+        return $this->db->fetchCol($select);
+    }
+
+
+    private function _find($where = null, $order = null, $group = null, array $variable = []): \Zend_Db_Select
+    {
+        if (!$this->_permission("GET")) {
+            throw new \Exception("No rights (GET) to dataTemplate: " . get_called_class());
+        }
+
+        $select = $this->createSelect($variable);
+
+        $this->_setWhere($select, $where);
+        $this->_setOrder($select, $order);
+        $this->_setGroup($select, $group);
+
+        $this->_setColumns($select);
 
         return $select;
     }
@@ -396,18 +434,18 @@ abstract class DataTemplate
         return $this->findOne([$key . ' = ?' => $id], [], $variable);
     }
 
-    public function find($where = null, array $order = null, array $variable = []): Collection
+    public function find($where = null, $order = null, $group = null, array $variable = []): Collection
     {
-        $select = $this->_find($where, $order, $variable);
+        $select = $this->_find($where, $order, $group, $variable);
 
         $collection = $this->db->fetchAll($select);
 
         return $this->beforeOutput(new Collection($collection, $this));
     }
 
-    public function findOne($where = null, array $order = null, array $variable = []): Record
+    public function findOne($where = null, $order = null, $group = null, array $variable = []): Record
     {
-        $select = $this->_find($where, $order, $variable);
+        $select = $this->_find($where, $order, $group, $variable);
 
         $record = $this->db->fetchRow($select);
 
@@ -415,4 +453,39 @@ abstract class DataTemplate
 
         return $collection->current();
     }
+
+
+    public function exists($where = null, $group = null, array $variable = []): bool
+    {
+        $select = $this->_find($where, null, $group, $variable);
+
+        return $this->db->fetchOne("SELECT EXISTS({$select})") == 1;
+    }
+
+
+    public function count($column, $where = null, $group = null, array $variable = [])
+    {
+        return $this->_aggregateFunction("COUNT", $column, $where, $group, $variable);
+    }
+
+    public function sum($column, $where = null, $group = null, array $variable = [])
+    {
+        return $this->_aggregateFunction("SUM", $column, $where, $group, $variable);
+    }
+
+    public function max($column, $where = null, $group = null, array $variable = [])
+    {
+        return $this->_aggregateFunction("MAX", $column, $where, $group, $variable);
+    }
+
+    public function min($column, $where = null, $group = null, array $variable = [])
+    {
+        return $this->_aggregateFunction("MIN", $column, $where, $group, $variable);
+    }
+
+    public function avg($column, $where = null, $group = null, array $variable = [])
+    {
+        return $this->_aggregateFunction("AVG", $column, $where, $group, $variable);
+    }
+
 }

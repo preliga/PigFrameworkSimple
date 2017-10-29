@@ -17,22 +17,6 @@ class addshow extends Admin
     {
         $movies = Movie::getInstance()->find();
 
-
-        $x = $movies->filter(function(Record $record){
-            return is_null($record->poster);
-        });
-
-
-        $x->addRecord(Movie::getInstance()->get(5),false);
-
-
-//        $x->reload();
-//        $y = $movies->marge($x);
-        echo "<pre>";
-        print_r($x->getArray());
-        echo "</pre>";
-        die();
-        
         $this->view->movies = $movies->getArray();
 
         if ($this->hasPost()) {

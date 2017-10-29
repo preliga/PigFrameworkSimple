@@ -1,16 +1,16 @@
 <?php
 
 use resource\action\Base;
-use resource\orm\Movie;
+use resource\orm\Show;
 
 class index extends Base
 {
 
     public function onAction()
     {
-        $movie = Movie::getInstance();
+        $shows = Show::getInstance();
 
-        $movies = $movie->find()->getArray();
+        $movies = $shows->find(['s.term <= DATE_ADD(NOW(), INTERVAL 7 DAY)'], null, 'm.id')->getArray();
 
         $emptyPoster = base64_encode(file_get_contents('images/emptyPoster.jpg'));
 
