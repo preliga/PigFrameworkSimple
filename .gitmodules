@@ -4,3 +4,6 @@
 [submodule "library/PigOrm"]
 	path = library/PigOrm
 	url = https://github.com/preliga/PigOrm
+[submodule "public/scripts/lib/PigFrameworkJS"]
+	path = public/scripts/lib/PigFrameworkJS
+	url = https://github.com/preliga/PigFrameworkJS

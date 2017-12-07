@@ -8,7 +8,7 @@ const mainAction = action;
 
 requirejs(
     [
-        '/scripts/lib/Pig/App.js'
+        '/scripts/lib/PigFrameworkJS/App.js'
     ],
     function (App) {
         var app = new App();

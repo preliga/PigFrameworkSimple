@@ -1,7 +1,7 @@
 'use strict';
 define(
     [
-        '/scripts/lib/Pig/Action.js'
+        '/scripts/lib/PigFrameworkJS/Action.js'
     ],
     function (Action) {
         return class Base extends Action{
