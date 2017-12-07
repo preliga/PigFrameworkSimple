@@ -7,8 +7,8 @@
  * Time: 15:35
  */
 
-use library\Pig\model\Config;
-use library\Pig\orm\action\Action;
+use library\PigFramework\model\Config;
+use library\PigOrm\action\Action;
 
 class orm extends Action
 {

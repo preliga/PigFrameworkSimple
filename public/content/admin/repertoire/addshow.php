@@ -5,7 +5,7 @@
  * User: Piotr
  */
 
-use library\Pig\orm\Record;
+use library\PigOrm\Record;
 use resource\action\Base\Admin;
 use resource\orm\{
     Movie, Show

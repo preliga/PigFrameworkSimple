@@ -1,6 +1,6 @@
 <?php
 
-use library\Pig\model\Session;
+use library\PigFramework\model\Session;
 use resource\action\Base;
 
 class bookTickets extends Base
