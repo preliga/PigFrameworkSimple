@@ -5,7 +5,7 @@
  */
 namespace resource\action\Base;
 
-use library\Pig\model\Session;
+use library\PigFramework\model\Session;
 use resource\action\Base;
 
 abstract class Admin extends Base

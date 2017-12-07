@@ -7,10 +7,10 @@
  */
 namespace resource\orm;
 
-use library\Pig\model\{
+use library\PigFramework\model\{
     Config, Db
 };
-use library\Pig\orm\DataTemplate;
+use library\PigOrm\DataTemplate;
 
 class Movie extends DataTemplate
 {

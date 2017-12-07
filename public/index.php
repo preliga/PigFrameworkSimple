@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__.'/../vendor/autoload.php';
-require __DIR__ . '/../library/Pig/App.php';
+require __DIR__ . '/../library/PigFramework/App.php';
 
 // Define path to application directory
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__) .'/..'));

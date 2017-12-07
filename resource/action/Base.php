@@ -6,9 +6,9 @@
 
 namespace resource\action;
 
-use library\Pig\action\Action;
-use library\Pig\model\Config;
-use library\Pig\model\Db;
+use library\PigFramework\action\Action;
+use library\PigFramework\model\Config;
+use library\PigFramework\model\Db;
 use Zend_Db_Adapter_Mysqli;
 
 abstract class Base extends Action

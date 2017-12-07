@@ -8,10 +8,10 @@
 
 namespace resource\orm;
 
-use library\Pig\model\{
+use library\PigFramework\model\{
     Config, Db
 };
-use library\Pig\orm\{
+use library\PigOrm\{
     DataTemplate, Record
 };
 
