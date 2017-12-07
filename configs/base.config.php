@@ -5,5 +5,7 @@
  */
 
 return [
-    'appPath' => "/"
+    'appPath' => "/",
+    'ormPath' => "/orm",
+    'ormTemplatesPath' => "resource\orm\\"
 ];

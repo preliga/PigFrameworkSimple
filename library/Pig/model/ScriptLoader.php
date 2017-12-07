@@ -71,7 +71,7 @@ class ScriptLoader
         $script = "";
 
         foreach ($this->css as $path) {
-            $script .= "<link rel='stylesheet' href='$path' ></link>";
+            $script .= "<link rel='stylesheet' href='$path' />";
         }
 
         return $script;

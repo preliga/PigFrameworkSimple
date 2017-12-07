@@ -111,6 +111,7 @@ class View
             unset($data['path']);
             unset($data['status']);
             unset($data['message']);
+            unset($data['scriptLoader']);
         }
 
         header('Content-Type: application/json');

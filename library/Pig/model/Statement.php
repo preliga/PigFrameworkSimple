@@ -4,6 +4,7 @@
  * User: Piotr
  */
 
+
 namespace library\Pig\model;
 
 /**
@@ -68,6 +69,26 @@ class Statement
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @param string|null $type

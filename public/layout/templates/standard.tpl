@@ -8,6 +8,12 @@
     <meta name="author" content="">
 
     <title>Cinema</title>
+    <script src='/scripts/lib/fullCalendar/moment.min.js'></script>
+    <script src='/scripts/lib/fullCalendar/jquery.min.js'></script>
+    <link href='/scripts/lib/fullCalendar/fullcalendar.min.css' rel='stylesheet' />
+    <link href='/scripts/lib/fullCalendar/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+
+    <script src='/scripts/lib/fullCalendar/fullcalendar.min.js'></script>
 
     {$scriptLoader->includeAllCSS()}
 

@@ -14,7 +14,7 @@ abstract class DataTemplate
     /**
      * @var array
      */
-    protected static $instance = [];
+    protected static $instances = [];
 
     /**
      * @var \Zend_Db_Adapter_Mysqli
@@ -30,11 +30,11 @@ abstract class DataTemplate
     {
         $class = get_called_class();
 
-        if (empty(self::$instance[$class])) {
-            self::$instance[$class] = new $class();
+        if (empty(self::$instances[$class])) {
+            self::$instances[$class] = new $class();
         }
 
-        return self::$instance[$class];
+        return self::$instances[$class];
     }
 
 
